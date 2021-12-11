@@ -1,6 +1,6 @@
-#version core 460
-layout(location=0) in vec3 vpos;
+#version 450 core
+layout (location = 0) in vec3 pos;
 
 void main(){
-    gl_Position = vec4(vpos, 0.0f);
+    gl_Position = vec4(pos, 1.0f);
 }

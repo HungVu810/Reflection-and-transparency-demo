@@ -7,7 +7,10 @@
 #include<iostream>
 #include<cassert>
 #include<fstream>
+#include<sstream>
 #include<exception>
+
+enum SHADER_TYPE {VERTEX_SHADER, GEOMETRY_SHADER, FRAGMENT_SHADER};
 
 void frameBufferSizeCallback(GLFWwindow *window, int width, int height){
     glViewport(0, 0, width, height);
@@ -23,22 +26,33 @@ void runtimeError() noexcept{
 }
 
 // get the shader source from path, load it into the given shader name and compile it
-void loadShader(const std::string& path, unsigned shader){
+void loadShader(const std::string& path, unsigned &shader, SHADER_TYPE shader_type){
     std::fstream file{path};
     assert(file.is_open());
     std::string temp, ssrc;
     while(getline(file, temp)){
-        ssrc += temp;
+        ssrc += (temp += '\n');
     }
     const char* src = ssrc.c_str();
+    switch(shader_type){
+        case VERTEX_SHADER: shader = glCreateShader(GL_VERTEX_SHADER); break;
+        case GEOMETRY_SHADER: shader = glCreateShader(GL_GEOMETRY_SHADER); break;
+        case FRAGMENT_SHADER: shader = glCreateShader(GL_FRAGMENT_SHADER); break;
+    };
     glShaderSource(shader, 1, &src, nullptr);
     glCompileShader(shader);
     int compile_status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_status);
-    if(compile_status){
+    if(!compile_status){
         char infolog[256];
         glGetShaderInfoLog(shader, 256, NULL, infolog);
-        std::cout << infolog << std::endl;
+        std::string which_shader;
+        switch(shader_type){
+            case VERTEX_SHADER: which_shader = "\nVERTEX SHADER LOG ======\n"; break;
+            case GEOMETRY_SHADER: which_shader = "\nGEOMETRY SHADER LOG ======\n "; break;
+            case FRAGMENT_SHADER: which_shader = "\nFRAGMENT SHADER LOG ======\n "; break;
+        }
+        std::cout << which_shader << infolog << std::endl;
         std::terminate();
     }
 }
@@ -51,10 +65,10 @@ void loadProgram(unsigned &program, unsigned *shader, const size_t numshader){
     glLinkProgram(program);
     int link_status;
     glGetProgramiv(program, GL_LINK_STATUS, &link_status);
-    if(link_status){
+    if(!link_status){
         char infolog[256];
         glGetProgramInfoLog(program, 256, NULL, infolog);
-        std::cout << infolog << std::endl;
+        std::cout << "\nPROGRAM LINK STATUS LOG ======\n" << infolog << std::endl;
         std::terminate();
     }
 }
@@ -102,6 +116,7 @@ int main(){
         0.5f, -0.5f, 0.0f,
         0.0f, 0.5f, 0.0f
     };
+
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glGenBuffers(1, &vbo);
@@ -111,8 +126,9 @@ int main(){
     glEnableVertexAttribArray(0);
 
     // load shader and program
-    loadShader("/home/hungvu/Archive/progs/opengl/src/vertex.glsl", vertexShader);
-    loadShader("/home/hungvu/Archive/progs/opengl/src/fragment.glsl", fragShader);
+    
+    loadShader("/home/hungvu/Archive/progs/opengl/src/vertex.glsl", vertexShader, VERTEX_SHADER);
+    loadShader("/home/hungvu/Archive/progs/opengl/src/fragment.glsl", fragShader, FRAGMENT_SHADER);
     unsigned shader[] = {vertexShader, fragShader};
     loadProgram(program, shader, sizeof(shader)/sizeof(unsigned));
     glUseProgram(program);
@@ -121,7 +137,7 @@ int main(){
     while(!glfwWindowShouldClose(window)){
         // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         // glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_POINTS, 0, 3);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
