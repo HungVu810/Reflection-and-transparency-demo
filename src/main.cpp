@@ -107,26 +107,41 @@ int main(){
     // triangle pos, triangle color
     unsigned int vbo;
 
+    // ebo for indexed drawing
+    unsigned int ebo;
+
     // shader and program
     unsigned int vertexShader, fragShader, program;
 
     // storing data into buffer and enable vao vertex attribute indices
-    const float triangle[]={
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f
+    constexpr unsigned NUM_COMPONENT = 3;
+    float vertex_data[][NUM_COMPONENT] = {
+        {-0.5f, -0.5f, 0.0f},
+        {-0.5f, 0.5f, 0.0f},
+        {0.5f, -0.5f, 0.0f},
+        {0.5f, 0.5f, 0.0f}
     };
+    size_t bufsize = (sizeof(vertex_data) / sizeof(float*)) * NUM_COMPONENT * sizeof(float);
+    // indexed drawing a square from the vertex_data
+    unsigned square[] = {
+        0, 1, 2, 1, 2, 3
+    };
+    size_t ibufsize = sizeof(square) / sizeof(unsigned);
 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, bufsize, vertex_data, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(0);
 
+    glGenBuffers(1, &ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibufsize * sizeof(unsigned), square, GL_STATIC_DRAW);
+
+
     // load shader and program
-    
     loadShader("/home/hungvu/Archive/progs/opengl/src/vertex.glsl", vertexShader, VERTEX_SHADER);
     loadShader("/home/hungvu/Archive/progs/opengl/src/fragment.glsl", fragShader, FRAGMENT_SHADER);
     unsigned shader[] = {vertexShader, fragShader};
@@ -135,14 +150,19 @@ int main(){
 
     // rendering loop
     while(!glfwWindowShouldClose(window)){
-        // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        // glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_POINTS, 0, 3);
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDrawElements(GL_LINE_STRIP, ibufsize, GL_UNSIGNED_INT, 0);
+        // glDrawArrays(GL_TRIANGLES, 0, 3);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    cleanUp();
+    
+    glDeleteBuffers(1, &vbo);
+    glDeleteVertexArrays(1, &vao);
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragShader);
+    glDeleteProgram(program);
     glfwTerminate();
     return 0;
 }
