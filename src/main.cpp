@@ -8,6 +8,9 @@
 #include<cassert>
 #include<fstream>
 #include<exception>
+#include<array>
+#include<memory>
+#include<math.h>
 #include<../include/shader.h>
 #include<../include/runtime_except.h>
 
@@ -52,6 +55,37 @@ GLFWwindow* initOpenGL(){
     return window;
 }
 
+// void print(float* buffer, size_t offset, size_t end){
+//     assert(!((end + offset) % sizeof(float)))
+//     unsigned num_data = (end + offset) % sizeof(float);
+//     std::fstream writef{"/home/hungvu/Archive/progs/opengl/src/log.file"};
+//     assert(writef.is_open());
+//     std::stringstream
+//     for(size_t i = 0; i < num_data; i++){
+
+//         buffer[i] >> writef;
+//     }
+// }
+
+// void updateBuffer(float time, float original[][3], unsigned vbo){
+//     float *buffer{new float[3 * 3]};
+//     glGetBufferSubData(GL_ARRAY_BUFFER, 0, 3 * 3 * sizeof(float), (void*)buffer);
+//     // print(buffer, 0, 3 * 3 * sizeof(float));
+//     for(size_t i = 0; i < 3; i++){
+//         float radius = 0.0f;
+//         for(size_t j = 0; j < 3; j++){
+//             radius += std::pow(original[i][j], 2);
+//         }
+//         radius = std::sqrt(radius);
+//         for(size_t j = 0; j < 2; j++){
+//             if(!j) buffer[i * 3 + j] = radius * std::cos(std::acos(original[i][j] / radius) + time);
+//             else buffer[i * 3 + j] = radius * std::sin(std::asin(original[i][j] / radius) + time);
+//         }
+//     }
+//     glBufferSubData(GL_ARRAY_BUFFER, 0, 3 * 3 * sizeof(float), (void*)buffer);
+//     delete[] buffer;
+// }
+
 void cleanUp(){
     // glDetachShader();
 }
@@ -76,52 +110,46 @@ int main(){
     // storing data into buffer and enable vao vertex attribute indices
     constexpr unsigned NUM_COMPONENT = 3;
     float vertex_data[][NUM_COMPONENT] = {
-        {-0.5f, -0.5f, 0.0f},
-        {-0.5f, 0.5f, 0.0f},
-        {0.5f, -0.5f, 0.0f},
-        {0.5f, 0.5f, 0.0f}
+        {-0.5, -0.5, 0},
+        {0, 0.5, 0},
+        {0.5, -0.5, 0}
     };
     size_t bufsize = (sizeof(vertex_data) / sizeof(float*)) * NUM_COMPONENT * sizeof(float);
-    // indexed drawing a square from the vertex_data
-    unsigned square[] = {
-        0, 1, 2, 1, 2, 3
-    };
-    size_t ibufsize = sizeof(square) / sizeof(unsigned);
 
+    // format buffer data into vao attribute index
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, bufsize, vertex_data, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(0, NUM_COMPONENT, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(0);
-
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibufsize * sizeof(unsigned), square, GL_STATIC_DRAW);
-
 
     // load shader and program
     vertexShader.compileSource("/home/hungvu/Archive/progs/opengl/src/vertex.glsl");
     fragShader.compileSource("/home/hungvu/Archive/progs/opengl/src/fragment.glsl");
     unsigned shader[] = {vertexShader.getID(), fragShader.getID()};
-    loadProgram(program, shader, sizeof(shader)/sizeof(unsigned));
+    loadProgram(program, shader, sizeof(shader) / sizeof(unsigned));
+
+    // get uniform variable location
+    int uniform_time = glGetUniformLocation(program, "time");
     glUseProgram(program);
 
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // rendering loop
     while(!glfwWindowShouldClose(window)){
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        glDrawElements(GL_TRIANGLES, ibufsize, GL_UNSIGNED_INT, 0);
-        // glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glUniform1f(uniform_time, glfwGetTime());
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
     
     glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
-    // glDeleteShader(vertexShader);
-    // glDeleteShader(fragShader);
+    // glDeleteVertexArrays(1, &vao);
     glDeleteProgram(program);
     glfwTerminate();
     return 0;
