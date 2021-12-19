@@ -1,5 +1,8 @@
 #version 450 core
 layout (location = 0) in vec3 pos;
+layout (location = 1) in vec3 color_input;
+out vec3 color;
+
 
 uniform float time;
 
@@ -21,4 +24,5 @@ void main(){
     }
     gl_Position = vec4(hyp * cos(rad + time), hyp * sin(rad + time), 0.0f, 1.0f);
     /* gl_Position = vec4(pos, 1.0f); */
+    color = color_input;
 }

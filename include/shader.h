@@ -38,7 +38,7 @@ shader::shader(SHADER_TYPE shader_type){
     };
 };
 shader::~shader(){
-    glDeleteShader(id);
+    // glDeleteShader(id);
 };
 const char* shader::getSource(const std::string& path){
     std::fstream file{path};

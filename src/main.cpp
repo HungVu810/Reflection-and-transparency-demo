@@ -13,6 +13,8 @@
 #include<math.h>
 #include<../include/shader.h>
 #include<../include/runtime_except.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include<../include/stb_image.h>
 
 void frameBufferSizeCallback(GLFWwindow *window, int width, int height){
     glViewport(0, 0, width, height);
@@ -55,37 +57,6 @@ GLFWwindow* initOpenGL(){
     return window;
 }
 
-// void print(float* buffer, size_t offset, size_t end){
-//     assert(!((end + offset) % sizeof(float)))
-//     unsigned num_data = (end + offset) % sizeof(float);
-//     std::fstream writef{"/home/hungvu/Archive/progs/opengl/src/log.file"};
-//     assert(writef.is_open());
-//     std::stringstream
-//     for(size_t i = 0; i < num_data; i++){
-
-//         buffer[i] >> writef;
-//     }
-// }
-
-// void updateBuffer(float time, float original[][3], unsigned vbo){
-//     float *buffer{new float[3 * 3]};
-//     glGetBufferSubData(GL_ARRAY_BUFFER, 0, 3 * 3 * sizeof(float), (void*)buffer);
-//     // print(buffer, 0, 3 * 3 * sizeof(float));
-//     for(size_t i = 0; i < 3; i++){
-//         float radius = 0.0f;
-//         for(size_t j = 0; j < 3; j++){
-//             radius += std::pow(original[i][j], 2);
-//         }
-//         radius = std::sqrt(radius);
-//         for(size_t j = 0; j < 2; j++){
-//             if(!j) buffer[i * 3 + j] = radius * std::cos(std::acos(original[i][j] / radius) + time);
-//             else buffer[i * 3 + j] = radius * std::sin(std::asin(original[i][j] / radius) + time);
-//         }
-//     }
-//     glBufferSubData(GL_ARRAY_BUFFER, 0, 3 * 3 * sizeof(float), (void*)buffer);
-//     delete[] buffer;
-// }
-
 void cleanUp(){
     // glDetachShader();
 }
@@ -108,11 +79,11 @@ int main(){
     unsigned int program;
 
     // storing data into buffer and enable vao vertex attribute indices
-    constexpr unsigned NUM_COMPONENT = 3;
+    constexpr unsigned NUM_COMPONENT = 6; // xyz + rgb
     float vertex_data[][NUM_COMPONENT] = {
-        {-0.5, -0.5, 0},
-        {0, 0.5, 0},
-        {0.5, -0.5, 0}
+        {-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f},
+        {0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f},
+        {0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f}
     };
     size_t bufsize = (sizeof(vertex_data) / sizeof(float*)) * NUM_COMPONENT * sizeof(float);
 
@@ -121,9 +92,11 @@ int main(){
     glBindVertexArray(vao);
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, bufsize, vertex_data, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, NUM_COMPONENT, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    glEnableVertexAttribArray(0);
+    glBufferData(GL_ARRAY_BUFFER, bufsize, vertex_data, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, NUM_COMPONENT / 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, NUM_COMPONENT / 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(0); // postion format
+    glEnableVertexAttribArray(1); // color format
 
     // load shader and program
     vertexShader.compileSource("/home/hungvu/Archive/progs/opengl/src/vertex.glsl");
@@ -148,8 +121,10 @@ int main(){
         glfwPollEvents();
     }
     
+    glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
-    // glDeleteVertexArrays(1, &vao);
+    glDeleteShader(vertexShader.getID());
+    glDeleteShader(fragShader.getID());
     glDeleteProgram(program);
     glfwTerminate();
     return 0;
