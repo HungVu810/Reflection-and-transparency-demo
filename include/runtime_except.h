@@ -1,5 +1,7 @@
 #ifndef RUNTIME_EXCEPT_H
 #define RUNTIME_EXCEPT_H
+#include<iostream>
+#include<exception>
 
 void runtimeException() noexcept{
     try{

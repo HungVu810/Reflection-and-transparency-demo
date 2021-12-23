@@ -3,24 +3,19 @@
 // #include<GL/glext.h>
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
-// #include<cglm/>
+#include"../include/gl_context.h"
+#include"../include/gl_object.h"
+#include"../include/gl_vao.h"
+#include"../include/gl_vbo.h"
+#include"../include/shader.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include<../include/stb_image.h>
 #include<iostream>
 #include<cassert>
 #include<fstream>
 #include<exception>
-#include<array>
 #include<memory>
 #include<math.h>
-#include<../include/runtime_except.h>
-// #include<../include/gl_context.h>
-// #include<../include/gl_object.h>
-#include<../include/shader.h>
-#define STB_IMAGE_IMPLEMENTATION
-#include<../include/stb_image.h>
-
-void frameBufferSizeCallback(GLFWwindow *window, int width, int height){
-    glViewport(0, 0, width, height);
-}
 
 void loadProgram(unsigned &program, unsigned *shader, const size_t numshader){
     program = glCreateProgram();
@@ -39,24 +34,7 @@ void loadProgram(unsigned &program, unsigned *shader, const size_t numshader){
 }
 
 int main(){
-    // gl_context contx{600, 800, "window"};
-    // init OpengGL context with glfw framework
-    glfwInit();
-    GLFWwindow *window = glfwCreateWindow(600, 800, "hello", nullptr, nullptr);
-    if(!window){
-        std::cout << "Can not create window" << std::endl;
-        std::terminate();
-    }
-    // expose opengl api
-    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
-        std::cout << "Failed to init glad" << std::endl;
-        std::terminate();
-    }
-    // associate window to context
-    glfwMakeContextCurrent(window);
-    // set viewport and callback function when viewport is changed
-    glViewport(0, 0, 600, 800);
-    glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
+    gl_context contx{600, 800, "window"};
 
     // triangle
     unsigned int vao;
@@ -118,8 +96,8 @@ int main(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // load shader and program
-    vertexShader.compileSource("/home/hungvu/Archive/progs/opengl/src/vertex.glsl");
-    fragShader.compileSource("/home/hungvu/Archive/progs/opengl/src/fragment.glsl");
+    vertexShader.compileSource("/home/hungvu/Archive/progs/opengl/shader/vertex.glsl");
+    fragShader.compileSource("/home/hungvu/Archive/progs/opengl/shader/fragment.glsl");
     unsigned shader[] = {vertexShader.getID(), fragShader.getID()};
     loadProgram(program, shader, sizeof(shader) / sizeof(unsigned));
 
@@ -130,7 +108,7 @@ int main(){
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // rendering loop
 
-    while(!glfwWindowShouldClose(window)){
+    while(!glfwWindowShouldClose(contx.getWindow())){
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -138,7 +116,7 @@ int main(){
         glUniform1f(uniform_time, glfwGetTime());
         // glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(contx.getWindow());
         glfwPollEvents();
     }
     
