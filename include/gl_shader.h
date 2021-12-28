@@ -1,6 +1,7 @@
-#ifndef SHADER_H
-#define SHADER_H
+#ifndef GLSHADER_H
+#define GLSHADER_H
 
+#include"./gl_object.h"
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 #include<string>
@@ -11,11 +12,12 @@
 // include shader.h at the end of the main.cpp preprocesser macros
 enum SHADER_TYPE {VERTEX_SHADER, GEOMETRY_SHADER, FRAGMENT_SHADER};
 
-class shader{
+// wrapper of shader object
+class gl_shader : public gl_object{
     public:
-        shader(SHADER_TYPE shader_type);
-        ~shader();
-        unsigned int getID() const;
+        gl_shader(SHADER_TYPE shader_type);
+        ~gl_shader();
+
         // get the shader source from path, load it into the given shader name and compile it
         void compileSource(const std::string& path);
 
@@ -27,4 +29,4 @@ class shader{
         void checkCompileStatus();
 };
 
-#endif // SHADER_H
+#endif // GLSHADER_H
