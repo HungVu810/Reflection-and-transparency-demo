@@ -14,23 +14,13 @@ class gl_program : public gl_object{
         ~gl_program();
 
         // attach shaders, link and use program
-        template<std::size_t N>
-        void loadCompiledShaders(const std::array<gl_shader, N> &shaders){
-            for(auto &x : shaders){
-                glAttachShader(name, x.getID());
-            }
-            glLinkProgram(name);
-            checkLinkStatus();
-            glUseProgram(name);
-        }
-
-        void attachShader();
+        void loadCompiledShaders(gl_shader** shaders, size_t size);
 
         void link();
 
         void use();
 
-        void changeShader(unsigned old_shader_name, unsigned new_shader_name);
+        void changeShader(gl_shader &old_shader, gl_shader &new_shader);
 
         // assign uniform variable, the first parameter for gl_uniform_fn (int
         // location get with glGetUniformLocation) can be skipped, variadic the

@@ -20,10 +20,15 @@ class gl_shader : public gl_object{
 
         // get the shader source from path, load it into the given shader name and compile it
         void compileSource(const std::string& path);
+        void attach(unsigned program);
+        void detach(unsigned program);
+        bool getAttachStatus() const;
 
     private:
         std::string src;
         unsigned int id;
+        // attach_status = 0 is detached
+        bool attach_status;
         SHADER_TYPE type;
         const char* getSource(const std::string& path);
         void checkCompileStatus();

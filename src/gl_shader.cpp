@@ -10,17 +10,32 @@ gl_shader::gl_shader(SHADER_TYPE shader_type) : gl_object(){
         case GEOMETRY_SHADER: name = glCreateShader(GL_GEOMETRY_SHADER); break;
         case FRAGMENT_SHADER: name = glCreateShader(GL_FRAGMENT_SHADER); break;
     };
+    attach_status = 0;
 };
 
 gl_shader::~gl_shader(){
     glDeleteShader(name);
 };
 
-void gl_shader::compileSource(const std::string& path) {
+void gl_shader::compileSource(const std::string& path){
     const char* csrc = getSource(path);
     glShaderSource(name, 1, &csrc, nullptr);
     glCompileShader(name);
     checkCompileStatus();
+}
+
+void gl_shader::attach(unsigned program){
+    glAttachShader(program, name);
+    attach_status = 1;
+}
+
+void gl_shader::detach(unsigned program){
+    glDetachShader(program, name);
+    attach_status = 0;
+}
+
+bool gl_shader::getAttachStatus() const {
+    return attach_status;
 }
 
 // private

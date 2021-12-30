@@ -14,39 +14,39 @@ void gl_vbo::bind() {
     glBindBuffer(GL_ARRAY_BUFFER, name);
 }
 
-void gl_vbo::loadData(const float *buffer, size_t size, GLenum usage, unsigned pos = 0, unsigned color = 0, unsigned texture = 0){
+void gl_vbo::loadData(const float *buffer, size_t size, GLenum usage, unsigned attribOne = 0, unsigned attribTwo = 0, unsigned attribThree = 0){
     glBufferData(GL_ARRAY_BUFFER, size, buffer, usage);
-    // the ordering of the buffer vertex attribs data is: pos, color, then texture
-    pos_comp = pos;
-    color_comp = color;
-    tex_comp = texture;
+    // the ordering of the buffer vertex attribs data is: attribOne, attribTwo, then attribThree
+    attribOne_comp = attribOne;
+    attribTwo_comp = attribTwo;
+    attribThree_comp = attribThree;
 }
 
-unsigned gl_vbo::positionCompNum() const {
-    assert(pos_comp);
-    return pos_comp;
+unsigned gl_vbo::attribOneCompNum() const {
+    assert(attribOne_comp);
+    return attribOne_comp;
 }
-unsigned gl_vbo::colorCompNum() const {
-    assert(color_comp);
-    return color_comp;
+unsigned gl_vbo::attribTwoCompNum() const {
+    assert(attribTwo_comp);
+    return attribTwo_comp;
 }
-unsigned gl_vbo::textureCompNum() const {
-    assert(tex_comp);
-    return tex_comp;
+unsigned gl_vbo::attribThreeCompNum() const {
+    assert(attribThree_comp);
+    return attribThree_comp;
 }
 size_t gl_vbo::stride() const {
-    assert(pos_comp);
-    return (pos_comp + color_comp + tex_comp) * sizeof(GLfloat);
+    assert(attribOne_comp);
+    return (attribOne_comp + attribTwo_comp + attribThree_comp) * sizeof(GLfloat);
 }
-const void* gl_vbo::positionOffset() const {
-    assert(pos_comp);
+const void* gl_vbo::attribOneOffset() const {
+    assert(attribOne_comp);
     return (void*)0;
 }
-const void* gl_vbo::colorOffset() const {
-    assert(color_comp);
-    return (void*)(pos_comp * sizeof(float));
+const void* gl_vbo::attribTwoOffset() const {
+    assert(attribTwo_comp);
+    return (void*)(attribOne_comp * sizeof(float));
 }
-const void* gl_vbo::textureOffset() const {
-    assert(tex_comp);
-    return (void*)((pos_comp + color_comp) * sizeof(float));
+const void* gl_vbo::attribThreeOffset() const {
+    assert(attribThree_comp);
+    return (void*)((attribOne_comp + attribTwo_comp) * sizeof(float));
 }

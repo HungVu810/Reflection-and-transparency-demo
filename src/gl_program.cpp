@@ -9,6 +9,16 @@ gl_program::~gl_program(){
     glDeleteProgram(name);
 }
 
+void gl_program::loadCompiledShaders(gl_shader** shaders, size_t size){
+    assert(size);
+    for(size_t i = 0; i < size; i++){
+        shaders[i]->attach(name);
+    }
+    glLinkProgram(name);
+    checkLinkStatus();
+    glUseProgram(name);
+}
+
 void gl_program::link(){
     glLinkProgram(name);
 }
@@ -17,11 +27,19 @@ void gl_program::use(){
     glUseProgram(name);
 }
 
-void gl_program::changeShader(unsigned old_shader_name, unsigned new_shader_name){
-    glDetachShader(name, old_shader_name);
-    glAttachShader(name, new_shader_name);
-    glLinkProgram(name);
+// remove the old_shader, grap it with glAttachedShader since there can be only 1 active shader each shader binding point
+void gl_program::changeShader(gl_shader &old_shader, gl_shader &new_shader){
+    if(old_shader.getAttachStatus()){
+        old_shader.detach(name);
+        new_shader.attach(name);
+        glLinkProgram(name);
+    }
+    else {
+        std::cerr << "Can't detach an unattached shader id " << old_shader.getID() << std::endl;
+    }
 }
+
+// private
 
 void gl_program::checkLinkStatus(){
     int link_status;

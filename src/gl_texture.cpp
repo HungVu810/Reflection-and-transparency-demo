@@ -6,6 +6,7 @@
 
 // TEXTURE UNIT
 // reload texture ?
+// associate sampler2D uniform variable with a texture unit via glUniform1i or glUniform1iv
 
 gl_texture::gl_texture() : gl_object(){
     // glActiveTexture()
