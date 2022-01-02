@@ -26,6 +26,8 @@ gl_context::gl_context(unsigned int width, unsigned int height, std::string wnam
     // set viewport and callback function when viewport is changed
     glViewport(0, 0, width, height);
     glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
+    win_width = width;
+    win_height = height;
 }
 
 gl_context::~gl_context() noexcept{
@@ -37,4 +39,12 @@ gl_context::~gl_context() noexcept{
 
 GLFWwindow* gl_context::getWindow(){
     return window;
+}
+
+unsigned gl_context::width() const {
+    return win_width;
+}
+
+unsigned gl_context::height() const {
+    return win_height;
 }

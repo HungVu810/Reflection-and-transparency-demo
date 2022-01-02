@@ -1,11 +1,6 @@
 // #define GL_GLEXT_PROTOTYPES
 // #include<GL/gl.h>
 // #include<GL/glext.h>
-#include<glad/glad.h>
-#include<GLFW/glfw3.h>
-#include<glm/mat4x4.hpp>
-#include<glm/gtc/matrix_transform.hpp>
-#include<glm/gtc/type_ptr.hpp>
 #include"../include/gl_context.h"
 #include"../include/gl_object.h"
 #include"../include/gl_vao.h"
@@ -13,6 +8,13 @@
 #include"../include/gl_shader.h"
 #include"../include/gl_program.h"
 #include"../include/gl_texture.h"
+// #include"../include/worldSpace_camera.h"
+#include<glad/glad.h>
+#include<GLFW/glfw3.h>
+#include<glm/vec3.hpp>
+#include<glm/mat4x4.hpp>
+#include<glm/gtc/matrix_transform.hpp>
+#include<glm/gtc/type_ptr.hpp>
 #include<iostream>
 #include<cassert>
 #include<fstream>
@@ -21,8 +23,56 @@
 #include<cmath>
 #include<array>
 
+namespace worldSpace_camera{
+    glm::vec3 position{0.0f};
+    // the direction is the same unless spinned with roll or pitch then the
+    // whole camera frame (direction, up, side) vectors basis is rotated
+    glm::vec3 direction{0.0f, 0.0f, -1.0f}; // -z axis
+    glm::vec3 up{0.0f, 1.0f, 0.0f}; // y axis
+    glm::vec3 side{1.0f, 0.0f, 0.0f}; // x axis
+    double pitch_angle = 0.0;
+    double yaw_angle = 0.0;
+    double roll_angle = 0.0;
+    float win_width, win_height;
+    float moveRate = 0.5f;
+    double sensitivity = 0.000002;
+    glm::vec3 lookAt(){
+        // keep look at the specified direction and not a specific object
+        return position + direction;
+    }
+}
+
+void handleInputGeneral(GLFWwindow *window, int key, int scancode, int actions, int mods){
+    using namespace worldSpace_camera;
+    if(actions == GLFW_PRESS){
+        switch(key){
+            case GLFW_KEY_Q: glfwSetWindowShouldClose(window, 1); break;
+            // movements
+            case GLFW_KEY_W: position += moveRate * direction; break;
+            case GLFW_KEY_S: position -= moveRate * direction; break;
+            case GLFW_KEY_A: position -= moveRate * side; break;
+            case GLFW_KEY_D: position += moveRate * side; break;
+        }
+    }
+}
+
+void handleCursorPos(GLFWwindow *window, double xpos, double ypos){
+    using namespace worldSpace_camera;
+    if (xpos >= 0 && xpos <= win_width && ypos >= 0 && ypos <= win_height){
+        yaw_angle = (-std::acos(-1) / win_width) * xpos + std::acos(0);
+        pitch_angle = (-std::acos(-1) / win_height) * ypos + std::acos(0);
+        side = glm::vec3(std::cos(yaw_angle), side.y, -std::sin(yaw_angle));
+        up = glm::vec3(up.x, std::cos(pitch_angle), std::sin(pitch_angle));
+        direction = glm::vec3(
+                -std::sin(yaw_angle),
+               std::sin(pitch_angle),
+               -std::cos(yaw_angle)
+               );
+    }
+}
+
 int main(){
-    gl_context contx{600, 800, "window"};
+    gl_context contx{1920, 1080, "window"};
 
     // 2 boxes
     std::array<gl_vao, 2> arr_vao;
@@ -106,8 +156,9 @@ int main(){
     // uniform variable values and transformation matrices
     // program.assignUniform<GLfloat>("time", glUniform1f, (float)glfwGetTime());
     glm::vec3 model_objectPosition(0.0f, 0.0f, -2.5f);
+    glm::vec3 model_lightPosition{0.0f};
     glm::vec3 object_color(1.0f, 0.5f, 0.5f);
-    glm::vec3 white_light(1.0f, 0.5f, 0.5f);
+    glm::vec3 white_light(1.0f, 1.0f, 1.0f);
     glm::mat4 basis{1.0f};
     glm::mat4 model{1.0f};
     glm::mat4 view{1.0f};
@@ -119,11 +170,21 @@ int main(){
 
     // rendering loop
     while(!glfwWindowShouldClose(contx.getWindow())){
+        // clear framebuffer from previous rendering
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        float time = glfwGetTime();
 
-        glm::vec3 model_lightPosition{time, 2 * glm::sin(time), -2.5f};
+        // handle input and update data
+        glfwSetInputMode(contx.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        worldSpace_camera::win_width = contx.width();
+        worldSpace_camera::win_height = contx.height();
+        glfwSetCursorPosCallback(contx.getWindow(), handleCursorPos);
+        glfwSetKeyCallback(contx.getWindow(), handleInputGeneral);
+
+        float time = glfwGetTime();
+        model_lightPosition = glm::vec3(2.0f, 2 * std::cos(time), -2.5f);
+        // camera_position = model_objectPosition + glm::vec3(2.5 * std::cos(time * 1/2), 2, 2.5 * std::sin(time * 1/2));
+
         for(size_t i = 0; i < arr_vao.size(); i++){
             arr_vao[i].bind();
             if(!i && !light_fshader.getAttachStatus()){ // attach light_fshader for vao[0], light source
@@ -133,16 +194,16 @@ int main(){
             }
             else if(i && !object_fshader.getAttachStatus()){ //  attach object_fshader for vao[1], normal object
                 program.changeShader(light_fshader, object_fshader);
-                program.assignUniform<GLsizei, const GLfloat*>("object_color", glUniform3fv, 1, glm::value_ptr(object_color));
-                program.assignUniform<GLsizei, const GLfloat*>("white_light", glUniform3fv, 1, glm::value_ptr(white_light));
+                program.assignUniform("object_color", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(object_color)));
+                program.assignUniform("white_light", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(white_light)));
                 model = glm::translate(basis, model_objectPosition);
             }
-            view = glm::translate(model, glm::vec3(-1.0f, 0.0f, 1.0f));
-            // assign uniform variable
-            program.assignUniform("light_position", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(model_lightPosition)));
-            program.assignUniform<GLsizei, GLboolean, const GLfloat*>("model", glUniformMatrix4fv, 1, GL_FALSE, glm::value_ptr(model));
-            program.assignUniform<GLsizei, GLboolean, const GLfloat*>("view", glUniformMatrix4fv, 1, GL_FALSE, glm::value_ptr(view));
-            program.assignUniform<GLsizei, GLboolean, const GLfloat*>("projection", glUniformMatrix4fv, 1, GL_FALSE, glm::value_ptr(projection));
+            view = glm::lookAt(worldSpace_camera::position, worldSpace_camera::lookAt(), worldSpace_camera::up);
+            // light_position depended on the view matrix
+            program.assignUniform("light_position", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(glm::vec3(view * glm::vec4(model_lightPosition, 1.0f)))));
+            program.assignUniform("model", glUniformMatrix4fv, 1, static_cast<unsigned char>(GL_FALSE), const_cast<const float*>(glm::value_ptr(model)));
+            program.assignUniform("view", glUniformMatrix4fv, 1, static_cast<unsigned char>(GL_FALSE), const_cast<const float*>(glm::value_ptr(view)));
+            program.assignUniform("projection", glUniformMatrix4fv, 1, static_cast<unsigned char>(GL_FALSE), const_cast<const float*>(glm::value_ptr(projection)));
 
             glDrawElements(GL_TRIANGLES, arr_vao[i].eboNumIndices(), GL_UNSIGNED_INT, (void*)0);
         }
@@ -150,6 +211,5 @@ int main(){
         glfwSwapBuffers(contx.getWindow());
         glfwPollEvents();
     }
-
     return 0;
 }

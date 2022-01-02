@@ -19,9 +19,13 @@ class gl_context{
         static std::stack<gl_object> st_glObject;
         gl_context(unsigned int width, unsigned int height, std::string wname);
         ~gl_context() noexcept;
+
         GLFWwindow* getWindow();
+        unsigned width() const;
+        unsigned height() const;
     private:
         GLFWwindow *window;
+        unsigned win_width, win_height;
 };
 
 #endif // GLCONTEXT_H
