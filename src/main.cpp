@@ -79,6 +79,7 @@ int main(){
 
     // object attributes data
     gl_vbo vbo;
+
     // boxes buffer data, pos + normal + tex coord
     float vertex_data[] = {
         // back side
@@ -121,6 +122,7 @@ int main(){
     unsigned int index[] = {
         0, 1, 2, 0, 3, 2, 4, 5, 6, 4, 7, 6, 8, 9, 10, 8, 11, 10, 12, 13, 14, 12, 15, 14, 16, 17, 18, 16, 19, 18, 20, 21, 22, 20, 23, 22
     };
+
     vbo.bind();
     vbo.loadData(vertex_data, sizeof(vertex_data), GL_DYNAMIC_DRAW, 3, 3, 2);
 
@@ -134,9 +136,24 @@ int main(){
     }
 
     // texture
-    gl_texture brickwall;
-    brickwall.bind();
-    brickwall.loadData("/home/hungvu/Archive/progs/opengl/texture/brickwall.png");
+    gl_texture wood_box;
+    wood_box.bind(GL_TEXTURE0);
+    wood_box.loadData("/home/hungvu/Archive/progs/opengl/texture/box.png", true);
+    wood_box.color = glm::vec3(1.0f, 1.0f, 1.0f);
+    wood_box.ambient = glm::vec3(0.09, 0.09, 0.09);
+    wood_box.diffuse = glm::vec3(10.0, 0.0, 0.0);
+
+    gl_texture steel_frame;
+    steel_frame.bind(GL_TEXTURE1);
+    steel_frame.loadData("/home/hungvu/Archive/progs/opengl/texture/steel_frame.png", true);
+    steel_frame.color = glm::vec3(0.5f, 0.5f, 0.5f);
+    steel_frame.specular = glm::vec3(1.5f, 1.5f, 1.5f);
+    steel_frame.shininess = 32.0f;
+
+    gl_texture matrix;
+    matrix.bind(GL_TEXTURE2);
+    matrix.loadData("/home/hungvu/Archive/progs/opengl/texture/matrix.jpg", false);
+    matrix.ambient = glm::vec3(0.1f, 0.1f, 0.1f);
 
     // shader
     gl_shader vertex_shader{VERTEX_SHADER};
@@ -154,10 +171,9 @@ int main(){
     program.loadCompiledShaders(shaders, sizeof(shaders) / sizeof(gl_shader*));
 
     // uniform variable values and transformation matrices
-    // program.assignUniform<GLfloat>("time", glUniform1f, (float)glfwGetTime());
     glm::vec3 model_objectPosition(0.0f, 0.0f, -2.5f);
     glm::vec3 model_lightPosition{0.0f};
-    glm::vec3 object_color(1.0f, 0.5f, 0.5f);
+    glm::vec3 object_color(0.5f, 0.5f, 0.5f);
     glm::vec3 white_light(1.0f, 1.0f, 1.0f);
     glm::mat4 basis{1.0f};
     glm::mat4 model{1.0f};
@@ -182,25 +198,33 @@ int main(){
         glfwSetKeyCallback(contx.getWindow(), handleInputGeneral);
 
         float time = glfwGetTime();
-        model_lightPosition = glm::vec3(2.0f, 2 * std::cos(time), -2.5f);
+        model_lightPosition = glm::vec3(8 * std::cos(time), 8 * std::sin(time), -10.0f);
         // camera_position = model_objectPosition + glm::vec3(2.5 * std::cos(time * 1/2), 2, 2.5 * std::sin(time * 1/2));
+        view = glm::lookAt(worldSpace_camera::position, worldSpace_camera::lookAt(), worldSpace_camera::up);
 
         for(size_t i = 0; i < arr_vao.size(); i++){
             arr_vao[i].bind();
             if(!i && !light_fshader.getAttachStatus()){ // attach light_fshader for vao[0], light source
                 program.changeShader(object_fshader, light_fshader);
                 program.assignUniform<GLsizei, const GLfloat*>("white_light", glUniform3fv, 1, glm::value_ptr(white_light));
-                model = glm::translate(basis, model_lightPosition);
+                model = glm::scale(basis, glm::vec3(0.2f, 0.2f, 0.2f));
+                model = glm::translate(model, model_lightPosition);
             }
             else if(i && !object_fshader.getAttachStatus()){ //  attach object_fshader for vao[1], normal object
                 program.changeShader(light_fshader, object_fshader);
-                program.assignUniform("object_color", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(object_color)));
-                program.assignUniform("white_light", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(white_light)));
+                program.assignUniform("time", glUniform1f, time);
+                program.assignUniform("light_position", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(glm::vec3(view * glm::vec4(model_lightPosition, 1.0f)))));
+                program.assignUniform("material.wood_box", glUniform1i, wood_box.getUnit());
+                program.assignUniform("material.steel_frame", glUniform1i, steel_frame.getUnit());
+                program.assignUniform("material.matrix", glUniform1i, matrix.getUnit());
+                program.assignUniform("material.color", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(wood_box.color)));
+                program.assignUniform("light.ambient", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f))));
+                program.assignUniform("light.diffuse", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f))));
+                program.assignUniform("light.specular", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(glm::vec3(1.5f, 1.5f, 1.5f))));
+                program.assignUniform("material.shininess", glUniform1f, steel_frame.shininess);
                 model = glm::translate(basis, model_objectPosition);
             }
-            view = glm::lookAt(worldSpace_camera::position, worldSpace_camera::lookAt(), worldSpace_camera::up);
             // light_position depended on the view matrix
-            program.assignUniform("light_position", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(glm::vec3(view * glm::vec4(model_lightPosition, 1.0f)))));
             program.assignUniform("model", glUniformMatrix4fv, 1, static_cast<unsigned char>(GL_FALSE), const_cast<const float*>(glm::value_ptr(model)));
             program.assignUniform("view", glUniformMatrix4fv, 1, static_cast<unsigned char>(GL_FALSE), const_cast<const float*>(glm::value_ptr(view)));
             program.assignUniform("projection", glUniformMatrix4fv, 1, static_cast<unsigned char>(GL_FALSE), const_cast<const float*>(glm::value_ptr(projection)));

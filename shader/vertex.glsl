@@ -14,7 +14,7 @@ uniform mat4 projection;
 void main(){
     gl_Position = projection * view * model * vec4(pos, 1.0f);
     // MAKE SURE THAT THERE ARE NO NON-UNIFORM SCALE, otherwise the normal need to be multiplied with the transpose(invert(model))
-    frag_vec = vec3(view * model * vec4(pos, 1.0f));
+    frag_vec = normalize(vec3(view * model * vec4(pos, 1.0f)));
     // DO NOT APPLY translation on the plane normal
     normal_vec = normalize(vec3(view * model * vec4(normal, 0.0f)));
     texture_coord = tex;

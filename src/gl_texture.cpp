@@ -4,12 +4,10 @@
 #include<../include/stb_image.h>
 #include<cassert>
 
-// TEXTURE UNIT
 // reload texture ?
 // associate sampler2D uniform variable with a texture unit via glUniform1i or glUniform1iv
 
 gl_texture::gl_texture() : gl_object(){
-    // glActiveTexture()
     glGenTextures(1, &name);
 }
 
@@ -17,14 +15,29 @@ gl_texture::~gl_texture(){
     glDeleteTextures(1, &name);
 }
 
-void gl_texture::bind(){
+// the provided tex_unit must be unique (not used by another gl_texture when binding) from 0 to GL_MAX_COMBINED_TEXURE_IMAGE_UNITS. The tex_unit support all texture binding points. There can only 1 texure per tex_unit because 2 different sampler can't be assigned with the same tex_unit contains 2 different bounded binding points
+void gl_texture::bind(GLenum GL_TEXTUREI){
+    // the same as glActiveTexture(tex_unit) and glBindTexture(name)
+    assert(GL_TEXTUREI >= 0 && GL_TEXTUREI < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+    tex_unit = GL_TEXTUREI;
+    glActiveTexture(GL_TEXTUREI);
     glBindTexture(GL_TEXTURE_2D, name);
+    // glBindTextureUnit(tex_unit, name);
 }
 
-void gl_texture::loadData(const char *texture_path){
+// get texture unit assigned with the bind function
+int gl_texture::getUnit() const{
+    return tex_unit - GL_TEXTURE0;
+}
+
+// make sure to check to alpha value, png format need GL_RGBA (alpha channel) instead of GL_RGB
+void gl_texture::loadData(const char *texture_path, bool textureIsAlpha){
     data = stbi_load(texture_path, &width, &height, &channel, 0);
     assert(data);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    if(textureIsAlpha){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    }
+    else glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
     // default rules for texture wrapping and texture filter
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
