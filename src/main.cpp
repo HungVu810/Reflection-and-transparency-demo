@@ -174,7 +174,7 @@ int main(){
     glm::vec3 model_objectPosition(0.0f, 0.0f, -2.5f);
     glm::vec3 model_lightPosition{0.0f};
     glm::vec3 object_color(0.5f, 0.5f, 0.5f);
-    glm::vec3 light_color(1.0f, 1.0f, 1.0f);
+    glm::vec3 light_color(0.0f, 1.0f, 1.0f);
     glm::mat4 basis{1.0f};
     glm::mat4 model{1.0f};
     glm::mat4 view{1.0f};
@@ -198,7 +198,7 @@ int main(){
         glfwSetKeyCallback(contx.getWindow(), handleInputGeneral);
 
         float time = glfwGetTime();
-        model_lightPosition = glm::vec3(std::cos(time), std::sin(time), 2.5f);
+        model_lightPosition = glm::vec3(std::cos(time), std::sin(time), 1.5f);
 
         // the vector is constant length, does not modifead based on the surface
 
@@ -219,13 +219,15 @@ int main(){
                 // std::cerr << "(" << debug_pos.x << ", " << debug_pos.y << ", " << debug_pos.z << ") -- (" << debug_dir.x << ", " << debug_dir.y << ", " << debug_dir.z << ")" << std::endl;
                 program.assignUniform("light_position", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(glm::vec3(view * glm::vec4(model_lightPosition, 1.0f)))));
                 program.assignUniform("light_direction", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(glm::vec3(view * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f)))));
+                program.assignUniform("light_inner_cone", glUniform1f, 10.0f);
+                program.assignUniform("light_outer_cone", glUniform1f, 20.0f);
                 program.assignUniform("material.wood_box", glUniform1i, wood_box.getUnit());
                 program.assignUniform("material.steel_frame", glUniform1i, steel_frame.getUnit());
                 program.assignUniform("material.matrix", glUniform1i, matrix.getUnit());
-                program.assignUniform("material.matrix_emission_strength", glUniform1f, 0.0f); // needed ?
-                program.assignUniform("material.steel_frame_ambient", glUniform1f, 0.5f); // average of the light color ?
-                program.assignUniform("material.diffuse_tol", glUniform1f, 10.0f); // average of the light color ?
-                program.assignUniform("material.specular_tol", glUniform1f, 1.0f); // average of the light color ?
+                program.assignUniform("material.matrix_emission_strength", glUniform1f, 0.0f);
+                program.assignUniform("material.steel_frame_ambient", glUniform1f, 0.5f);
+                program.assignUniform("material.diffuse_tol", glUniform1f, 10.0f);
+                program.assignUniform("material.specular_tol", glUniform1f, 1.0f);
                 program.assignUniform("material.shininess", glUniform1f, 32.0f);
                 if(i == 1) model = glm::rotate(glm::translate(basis, model_objectPosition + glm::vec3(-1.0f, -1.0f, 0.0f)), glm::radians(time * 50), glm::vec3(1.0f, 1.0f, 0.0f));
                 if(i == 2) model = glm::translate(basis, model_objectPosition + glm::vec3(-1.0f, 1.0f, 0.0f));

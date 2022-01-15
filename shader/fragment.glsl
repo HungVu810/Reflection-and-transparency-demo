@@ -22,7 +22,8 @@ uniform float time;
 uniform vec3 light_color;
 uniform vec3 light_position;
 uniform vec3 light_direction;
-/* uniform vec3 light_falloff_angle; */
+uniform float light_inner_cone;
+uniform float light_outer_cone;
 uniform Material material;
 
 void main(){
@@ -33,7 +34,10 @@ void main(){
     float norm_frag_to_light = length(light_position - frag_vec);
     float attenuation = 1.0f / (1.0f + 0.22f * norm_frag_to_light + 0.20f * pow(norm_frag_to_light, 2));
     // fall_off 1 = dont apply on texture
-    int fall_off = dot(normalize(light_direction), -frag_to_light) > cos(radians(20.0f)) ? 1 : 0;
+    float fall_off = clamp((cos(radians(light_outer_cone)) - dot(normalize(light_direction), -frag_to_light)) / (cos(radians(light_outer_cone)) - cos(radians(light_inner_cone)))
+            , 0.0
+            , 1.0);
+    /* int fall_off = dot(normalize(light_direction), -frag_to_light) > cos(radians(light_inner_cone)) ? 1 : 0; */
 
     vec3 Ambient;
     // factor the texture() and multiply it once ?
@@ -47,6 +51,7 @@ void main(){
         Ambient = material.steel_frame_ambient * vec3(texture(material.steel_frame, texture_coord));
     }
     vec3 Diffuse = light_color * fall_off * material.diffuse_tol * attenuation * max(dot(frag_to_light, normal_vec), 0.0f) * vec3(texture(material.wood_box, texture_coord));
-    /* vec3 Specular = 5.0f * light_color * fall_off * material.specular_tol * attenuation * pow(max(dot(frag_to_camera, reflected_frag_to_light), 0.0f), material.shininess) * vec3(texture(material.steel_frame, texture_coord)); */
-    frag_color = vec4((Ambient + Diffuse /*+ Specular*/), 0.0f);
+    vec3 Specular = light_color * fall_off * material.specular_tol * attenuation * pow(max(dot(frag_to_camera, reflected_frag_to_light), 0.0f), material.shininess) * vec3(texture(material.steel_frame, texture_coord));
+    frag_color = vec4((Ambient + Diffuse + Specular), 0.0f);
+    /* frag_color = vec4(vec3(gl_FragCoord.z), 1.0f); */
 }
