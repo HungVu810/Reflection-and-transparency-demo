@@ -1,8 +1,7 @@
 #ifndef GLTEXTURE_H
 #define GLTEXTURE_H
-
-#include"gl_object.h"
-#include"glm/vec3.hpp"
+#include "gl_object.h"
+#include "glm/vec3.hpp"
 
 // TEXTURE UNIT
 
@@ -11,13 +10,16 @@ class gl_texture : public gl_object{
         gl_texture();
         ~gl_texture();
         void bind(GLenum GL_TEXTUREI);
-        void loadData(const char *texture_path, bool textureIsAlpha);
+        void loadData(const char *texture_path, unsigned ai_textureType);
+        // needed ?
         int getUnit() const;
-        glm::vec3 ambient, diffuse, specular, color;
-        float shininess;
+        unsigned getType() const;
+        // glm::vec3 ambient, diffuse, specular, color;
+        // float shininess;
     private:
         int width, height, channel;
         GLenum tex_unit;
+        unsigned type;
         unsigned char *data;
 };
 

@@ -1,6 +1,7 @@
 #include"../include/gl_vao.h"
 #include"../include/runtime_except.h"
 #include<cassert>
+#include<vector>
 
 gl_vao::gl_vao() : gl_object::gl_object(){
     glGenVertexArrays(1, &name);
@@ -12,7 +13,7 @@ gl_vao::~gl_vao() noexcept{
     glDeleteBuffers(1, &ebo);
 }
 
-void gl_vao::bind() const {
+void gl_vao::bind() const{
     glBindVertexArray(name);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 }
@@ -28,12 +29,14 @@ void gl_vao::attribData(unsigned index, unsigned component, GLenum type, bool no
     }
 }
 
-void gl_vao::eboData(const unsigned* index_buffer, size_t size, GLenum usage){
-    assert(size && index_buffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, index_buffer, usage);
-    indices = size / sizeof(unsigned);
+void gl_vao::eboData(const std::vector<face> &faces, GLenum usage){
+	for(const face &f: faces){
+		for(size_t i = 0; i < f.indices.size(); i++)
+			ebuf.push_back(f.indices[i]);
+	}
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * ebuf.size(), ebuf.data(), usage);
 }
 
 unsigned gl_vao::eboNumIndices() const{
-    return indices;
+    return ebuf.size();
 }

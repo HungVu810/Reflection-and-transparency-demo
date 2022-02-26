@@ -1,0 +1,27 @@
+# ninja log v5
+137	205	1641102847564476281	CMakeFiles/opengl.dir/src/worldSpace_camera.cpp.o	6e920fb3c6ba0c4c
+2	500	1643782294006329604	CMakeFiles/opengl.dir/src/gl_shader.cpp.o	6316f02f91e5221
+2	497	1643782294006329604	CMakeFiles/opengl.dir/src/gl_program.cpp.o	38bf61c38f9fda08
+1	578	1645333354362296821	CMakeFiles/opengl.dir/src/gl_texture.cpp.o	e8707e2323915666
+2	189	1645848588289685733	CMakeFiles/opengl.dir/src/gl_vbo.cpp.o	8fe6583dd1130561
+1	528	1643782294034329780	CMakeFiles/opengl.dir/src/gl_context.cpp.o	fe8986e756e73581
+1	855	1645860238164709069	CMakeFiles/opengl.dir/src/main.cpp.o	c84001e1bebf02bb
+3	403	1643782293910329000	CMakeFiles/opengl.dir/src/runtime_except.cpp.o	63f74587b356d729
+2	273	1643782293782328194	CMakeFiles/opengl.dir/src/gl_object.cpp.o	a740998ee23730ca
+1	12	1643004709204462825	CMakeFiles/opengl.dir/src/gl_mesh.cpp.o	a039729abf8ec87
+4	256	1641102847612475681	CMakeFiles/opengl.dir/src/glad.c.o	c813b6985386f1a8
+10	47	1643761451240927833	CMakeFiles/opengl.dir/src/glw_model.cpp.o	9856cbd85b5dd55d
+856	951	1645860238260709463	bin/opengl	de7e57c845fbf5ea
+1	160	1645848417796969405	CMakeFiles/opengl.dir/src/gl_vao.cpp.o	484a90fb92485c43
+15	83	1645894746612601929	CMakeFiles/opengl.dir/src/glw_model.cpp.o	8b8bf8f36208b16
+83	131	1645894746660602047	CMakeFiles/opengl.dir/src/worldSpace_camera.cpp.o	af057ed6cfb76a4a
+16	439	1645894746968602804	CMakeFiles/opengl.dir/src/runtime_except.cpp.o	6f63d9d1d3cfcbc9
+14	441	1645894746972602814	CMakeFiles/opengl.dir/src/gl_object.cpp.o	124f898099c2b9eb
+15	465	1645894746996602873	CMakeFiles/opengl.dir/src/gl_shader.cpp.o	462e40576eed496f
+15	483	1645894747012602912	CMakeFiles/opengl.dir/src/gl_vbo.cpp.o	dafc942bd87c2066
+15	493	1645894747024602942	CMakeFiles/opengl.dir/src/gl_vao.cpp.o	1e819922e4bd3d8d
+14	512	1645894747044602991	CMakeFiles/opengl.dir/src/gl_program.cpp.o	6b7c15b9092eb3d5
+14	530	1645894747060603030	CMakeFiles/opengl.dir/src/gl_context.cpp.o	f50f6359df3df121
+15	1196	1645894747724604665	CMakeFiles/opengl.dir/src/gl_texture.cpp.o	e3c091b9241afee9
+16	1333	1645894747864605009	CMakeFiles/opengl.dir/src/main.cpp.o	84787d9313f9dc55
+1333	1464	1645894747992605325	bin/opengl	49dab5b6073dffba

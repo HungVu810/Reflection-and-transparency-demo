@@ -1,8 +1,8 @@
-#include"../include/gl_texture.h"
+#include "../include/gl_texture.h"
 // header to extract texture data
 #define STB_IMAGE_IMPLEMENTATION
-#include<../include/stb_image.h>
-#include<cassert>
+#include <../include/stb_image.h>
+#include <cassert>
 
 // reload texture ?
 // associate sampler2D uniform variable with a texture unit via glUniform1i or glUniform1iv
@@ -22,7 +22,21 @@ void gl_texture::bind(GLenum GL_TEXTUREI){
     tex_unit = GL_TEXTUREI;
     glActiveTexture(GL_TEXTUREI);
     glBindTexture(GL_TEXTURE_2D, name);
-    // glBindTextureUnit(tex_unit, name);
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 GL_RGB,
+                 width,
+                 height,
+                 0,
+                 channel == 3 ? GL_RGB : GL_RGBA,
+                 GL_UNSIGNED_BYTE,
+                 data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    // default rules for texture wrapping and texture filter
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 // get texture unit assigned with the bind function
@@ -31,17 +45,14 @@ int gl_texture::getUnit() const{
 }
 
 // make sure to check to alpha value, png format need GL_RGBA (alpha channel) instead of GL_RGB
-void gl_texture::loadData(const char *texture_path, bool textureIsAlpha){
+// unsigned ai_textureType is the unsinged equivalance of the aiTextureType enum class elements
+void gl_texture::loadData(const char *texture_path, unsigned ai_textureType){
+    // Define STBI_FAILURE_USERMSG to get user-friendly debug string
     data = stbi_load(texture_path, &width, &height, &channel, 0);
     assert(data);
-    if(textureIsAlpha){
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    }
-    else glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    // default rules for texture wrapping and texture filter
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    type = ai_textureType;
+}
+
+unsigned gl_texture::getType() const{
+    return type;
 }
