@@ -11,7 +11,8 @@ gl_vbo::~gl_vbo() noexcept{
 }
 
 void gl_vbo::bind() const{
-	glBindBuffer(GL_VERTEX_ARRAY, name);
+	glBindBuffer(GL_ARRAY_BUFFER, name);
+	"GL_ARRAY_BUFFER not GL_VERTEX_ARRAY"
 }
 
 void gl_vbo::loadData(const std::vector<vertex> &vertices, GLenum usage){

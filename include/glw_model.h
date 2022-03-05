@@ -24,7 +24,6 @@ class glw_model{
 			}
 			processModelData(scene->mRootNode);
 		};
-		glw_model(){};
 		~glw_model(){
 		};
 
@@ -50,15 +49,21 @@ class glw_model{
 			// loadMeshFaces(mesh);
 			// loadMeshMaterial
 			// vertices
+			vertex v;
 			for(size_t i = 0; i < mesh.mNumVertices; i++){
-				glm::vec3 vertexPos {mesh.mVertices[i].x, mesh.mVertices[i].y, mesh.mVertices[i].z};
-				glm::vec3 normal = glm::vec3{mesh.mNormals[i].x, mesh.mNormals[i].y, mesh.mNormals[i].z};;
-				glm::vec2 texcoord {mesh.mTextureCoords[0][i].x, mesh.mTextureCoords[0][i].y};
-				m.vertices.push_back(vertex{vertexPos, normal, texcoord});
+				v.position.x = mesh.mVertices[i].x;
+				v.position.y = mesh.mVertices[i].y;
+				v.position.z = mesh.mVertices[i].z;
+				v.normal.x = mesh.mNormals[i].x;
+				v.normal.y = mesh.mNormals[i].y;
+				v.normal.z = mesh.mNormals[i].z;
+				v.texcoord.x = mesh.mTextureCoords[0][i].x;
+				v.texcoord.y = mesh.mTextureCoords[0][i].y;
+				m.vertices.push_back(v);
 			}
 			// faces
+			face f;
 			for(size_t i = 0; i < mesh.mNumFaces; i++){
-				face f;
 				for(size_t j = 0; j < mesh.mFaces[i].mNumIndices; j++){
 					f.indices.push_back(mesh.mFaces[i].mIndices[j]); // implicit convert mIndices to f without having to goes through j index
 				}
@@ -86,6 +91,9 @@ class glw_model{
 		}
 
         void draw(gl_program &program, GLenum usage){
+			// boolean to check for if the model is already loaded
+			// If draw more than one model, load all to the vao and vbo
+			// If a model is not needed, render it somewhere else but don't delete it 
 			gl_vao vao;
 			gl_vbo vbo;
 			vao.bind();

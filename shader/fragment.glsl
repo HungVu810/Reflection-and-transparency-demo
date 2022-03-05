@@ -62,6 +62,6 @@ void main(){
     // vec3 Diffuse = light_color * fall_off * /*material.diffuse_tol **/ attenuation * max(dot(frag_to_light, normal_vec), 0.0f) * vec3(texture(material.diffuse0, texture_coord));
     // vec3 Specular = light_color * fall_off * material.specular_tol * attenuation * pow(max(dot(frag_to_camera, reflected_frag_to_light), 0.0f), material.shininess) * vec3(texture(material.steel_frame, texture_coord));
     // frag_color = vec4((Ambient + Diffuse /*+ Specular/*/), 0.0f);
-	frag_color = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	frag_color = vec4(texture(diffuse0, texture_coord));
     /* frag_color = vec4(vec3(gl_FragCoord.z), 1.0f); */
 }
