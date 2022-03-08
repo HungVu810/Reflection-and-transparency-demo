@@ -18,7 +18,7 @@ void gl_vao::bind() const{
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 }
 
-void gl_vao::attribData(unsigned index, unsigned component, GLenum type, bool normalized, size_t stride, const void *offset){
+void gl_vao::attribFormat(unsigned index, unsigned component, GLenum type, bool normalized, size_t stride, const void *offset){
     assert(index >= 0);
     try{
         glVertexAttribPointer(index, component, type, normalized, stride, offset);
@@ -29,14 +29,6 @@ void gl_vao::attribData(unsigned index, unsigned component, GLenum type, bool no
     }
 }
 
-void gl_vao::eboData(const std::vector<face> &faces, GLenum usage){
-	for(const face &f: faces){
-		for(size_t i = 0; i < f.indices.size(); i++)
-			ebuf.push_back(f.indices[i]);
-	}
+void gl_vao::eboData(const std::vector<unsigned> &ebuf, GLenum usage){
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * ebuf.size(), ebuf.data(), usage);
-}
-
-unsigned gl_vao::eboNumIndices() const{
-    return ebuf.size();
 }

@@ -3,15 +3,27 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <../include/stb_image.h>
 #include <cassert>
+#include <iostream>
 
-// reload texture ?
+// static init
+unsigned gl_texture::ambient = 0;
+unsigned gl_texture::diffuse = 0;
+unsigned gl_texture::specular = 0;
+unsigned gl_texture::emission = 0;
+
 // associate sampler2D uniform variable with a texture unit via glUniform1i or glUniform1iv
-
-gl_texture::gl_texture() : gl_object(){
+// unsigned ai_textureType is the unsinged equivalance of the aiTextureType enum class elements
+gl_texture::gl_texture(const char *texture_path, aiTextureType type) : gl_object(){
+    // Define STBI_FAILURE_USERMSG to get user-friendly debug string
+    data = stbi_load(texture_path, &width, &height, &channel, 0);
+	assert(data);
+	assignSamplerName(type);
     glGenTextures(1, &name);
 }
 
 gl_texture::~gl_texture(){
+	// problem with free an not malloc'ed data
+	stbi_image_free(data);
     glDeleteTextures(1, &name);
 }
 
@@ -22,6 +34,10 @@ void gl_texture::bind(GLenum GL_TEXTUREI){
     tex_unit = GL_TEXTUREI;
     glActiveTexture(GL_TEXTUREI);
     glBindTexture(GL_TEXTURE_2D, name);
+}
+
+void gl_texture::loadData(){
+	// make sure to check to alpha value, png format need GL_RGBA (alpha channel) instead of GL_RGB
     glTexImage2D(GL_TEXTURE_2D,
                  0,
                  GL_RGB,
@@ -39,20 +55,23 @@ void gl_texture::bind(GLenum GL_TEXTUREI){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-// get texture unit assigned with the bind function
 int gl_texture::getUnit() const{
     return tex_unit - GL_TEXTURE0;
 }
 
-// make sure to check to alpha value, png format need GL_RGBA (alpha channel) instead of GL_RGB
-// unsigned ai_textureType is the unsinged equivalance of the aiTextureType enum class elements
-void gl_texture::loadData(const char *texture_path, unsigned ai_textureType){
-    // Define STBI_FAILURE_USERMSG to get user-friendly debug string
-    data = stbi_load(texture_path, &width, &height, &channel, 0);
-    assert(data);
-    type = ai_textureType;
+std::string gl_texture::getSamplerName() const{
+	return sampler_name;
 }
 
-unsigned gl_texture::getType() const{
-    return type;
+void gl_texture::assignSamplerName(aiTextureType type){
+	switch(type){
+		case aiTextureType_AMBIENT: sampler_name = std::string{"ambient" + std::to_string(ambient++)}; break;
+		case aiTextureType_DIFFUSE: sampler_name = std::string{"diffuse" + std::to_string(diffuse++)}; break;
+		case aiTextureType_SPECULAR: sampler_name = std::string{"specular" + std::to_string(specular++)}; break;
+		case aiTextureType_EMISSIVE: sampler_name = std::string{"emission" + std::to_string(emission++)}; break;
+		default: {
+			std::cerr << "unknown aiTextureType" << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+	}
 }

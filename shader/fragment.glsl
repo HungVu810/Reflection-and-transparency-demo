@@ -1,12 +1,15 @@
 #version 450 core
 /* layout (binding = 0) uniform sampler2D myTexture; */
-in vec2 texture_coord;
-in vec3 normal_vec;
-in vec3 frag_vec;
+in vec3 frag_pos;
+in vec3 frag_normal;
+in vec2 frag_tex;
 
 out vec4 frag_color;
 
 struct Material{
+	// mat_avail = 0 if model does not have any texture, fragment color are assigned with Material::color
+	bool use_vertex_color;
+	vec4 vertex_color;
 	sampler2D ambient0;
 	sampler2D ambient1;
 	sampler2D ambient2;
@@ -26,12 +29,16 @@ struct Material{
     /* float shininess; */
 };
 
+struct Light{
+	vec3 position;
+	vec3 direction;
+	vec3 inner_cone;
+	vec3 outer_cone;
+	vec3 color;
+};
+
 uniform float time;
-uniform vec3 light_color;
-uniform vec3 light_position;
-uniform vec3 light_direction;
-uniform float light_inner_cone;
-uniform float light_outer_cone;
+uniform Light light;
 uniform Material material;
 
 void main(){
@@ -62,6 +69,8 @@ void main(){
     // vec3 Diffuse = light_color * fall_off * /*material.diffuse_tol **/ attenuation * max(dot(frag_to_light, normal_vec), 0.0f) * vec3(texture(material.diffuse0, texture_coord));
     // vec3 Specular = light_color * fall_off * material.specular_tol * attenuation * pow(max(dot(frag_to_camera, reflected_frag_to_light), 0.0f), material.shininess) * vec3(texture(material.steel_frame, texture_coord));
     // frag_color = vec4((Ambient + Diffuse /*+ Specular/*/), 0.0f);
-	frag_color = vec4(texture(diffuse0, texture_coord));
+	if(material.use_vertex_color)
+		frag_color = material.vertex_color;
+	else frag_color = texture(material.diffuse0, frag_tex);
     /* frag_color = vec4(vec3(gl_FragCoord.z), 1.0f); */
 }

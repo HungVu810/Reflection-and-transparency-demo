@@ -1,30 +1,31 @@
 // #define GL_GLEXT_PROTOTYPES
 // #include<GL/gl.h>
 // #include<GL/glext.h>
-#include"../include/gl_context.h"
-#include"../include/gl_object.h"
-#include"../include/gl_vao.h"
-#include"../include/gl_vbo.h"
-#include"../include/gl_shader.h"
-#include"../include/gl_program.h"
-#include"../include/gl_texture.h"
-#include"../include/glw_model.h"
+#include "../include/gl_context.h"
+#include "../include/gl_object.h"
+#include "../include/gl_vao.h"
+#include "../include/gl_vbo.h"
+#include "../include/gl_shader.h"
+#include "../include/gl_program.h"
+#include "../include/gl_texture.h"
+#include "../include/glw_model.h"
 // #include"../include/worldSpace_camera.h"
-#include<glad/glad.h>
-#include<GLFW/glfw3.h>
-#include<glm/vec3.hpp>
-#include<glm/mat4x4.hpp>
-#include<glm/gtc/matrix_transform.hpp>
-#include<glm/gtc/type_ptr.hpp>
-#include<iostream>
-#include<cassert>
-#include<fstream>
-#include<exception>
-#include<memory>
-#include<cmath>
-#include<array>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <assimp/material.h>
+#include <iostream>
+#include <cassert>
+#include <fstream>
+#include <exception>
+#include <memory>
+#include <cmath>
+#include <array>
 
-// clean this up handle() and camera(), cpp https://isocpp.org/wiki/faq/pointers-to-members#memfnptr-vs-fnptr
+// TODO:clean this up handle() and camera(), cpp https://isocpp.org/wiki/faq/pointers-to-members#memfnptr-vs-fnptr
 namespace worldSpace_camera{
 	glm::vec3 position{0.0f};
 	// the direction is the same unless spinned with roll or pitch then the
@@ -43,7 +44,6 @@ namespace worldSpace_camera{
 		return position + (0.5f * direction);
 	}
 }
-
 void handleInputGeneral(GLFWwindow *window, int key, int scancode, int actions, int mods){
 	using namespace worldSpace_camera;
 	if(actions == GLFW_PRESS || actions == GLFW_REPEAT){
@@ -57,7 +57,6 @@ void handleInputGeneral(GLFWwindow *window, int key, int scancode, int actions, 
 		if(key == GLFW_KEY_D){ position += moveRate * side; }
 	}
 }
-
 void handleCursorPos(GLFWwindow *window, double xpos, double ypos){
 	using namespace worldSpace_camera;
 	if (xpos >= 0 && xpos <= win_width && ypos >= 0 && ypos <= win_height){
@@ -66,18 +65,25 @@ void handleCursorPos(GLFWwindow *window, double xpos, double ypos){
 		side = glm::vec3(std::cos(yaw_angle), side.y, -std::sin(yaw_angle));
 		up = glm::vec3(up.x, std::cos(pitch_angle), std::sin(pitch_angle));
 		direction = glm::vec3(
-				-std::sin(yaw_angle),
-				std::sin(pitch_angle),
-				-std::cos(yaw_angle)
-				);
+			-std::sin(yaw_angle),
+			std::sin(pitch_angle),
+			-std::cos(yaw_angle)
+		);
 	}
 }
+// TODO:clean this up handle() and camera(), cpp https://isocpp.org/wiki/faq/pointers-to-members#memfnptr-vs-fnptr
 
 int main(){
 	gl_context contx{1920, 1080, "window"};
 
-	std::string model_path = "/home/hungvu/Archive/progs/opengl/model/backpack.obj";
-	glw_model model_obj{model_path};
+	std::string skull_model = "/home/hungvu/Archive/progs/opengl/model/skull/12140_Skull_v3_L2.obj";
+	std::vector<gl_texture> skull_mat = {
+		gl_texture{"/home/hungvu/Archive/progs/opengl/model/skull/diffuse.jpg", aiTextureType_DIFFUSE}
+	};
+	glw_model skull_obj{skull_model, skull_mat, 1};
+
+	std::string sphere_model = "/home/hungvu/Archive/progs/opengl/model/sphere/globe-sphere.obj";
+	glw_model sphere_obj{sphere_model, glm::vec4{0.5f, 0.5f, 0.5f, 0.0f}};
 
 	// shader
 	gl_shader vertex_shader{VERTEX_SHADER};
@@ -107,7 +113,7 @@ int main(){
 
 	// misc rendering modes
 	glEnable(GL_DEPTH_TEST);
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// rendering loop
 	while(!glfwWindowShouldClose(contx.getWindow())){
@@ -139,7 +145,8 @@ int main(){
 		// program.assignUniform("light_direction", glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(glm::vec3(view * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f)))));
 		// program.assignUniform("light_inner_cone", glUniform1f, 10.0f);
 		// program.assignUniform("light_outer_cone", glUniform1f, 20.0f);
-		model_obj.draw(program, GL_STATIC_DRAW);
+		skull_obj.draw(program, GL_STATIC_DRAW);
+		sphere_obj.draw(program, GL_STATIC_DRAW);
 
 		// for(size_t i = 0; i < arr_vao.size(); i++){
 		// 	arr_vao[i].bind();
