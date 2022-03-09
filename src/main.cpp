@@ -81,6 +81,7 @@ int main(){
 		gl_texture{"/home/hungvu/Archive/progs/opengl/model/skull/diffuse.jpg", aiTextureType_DIFFUSE}
 	};
 	glw_model skull_obj{skull_model, skull_mat, 1};
+	skull_obj.scale(0.1f);
 
 	std::string sphere_model = "/home/hungvu/Archive/progs/opengl/model/sphere/globe-sphere.obj";
 	glw_model sphere_obj{sphere_model, glm::vec4{0.5f, 0.5f, 0.5f, 0.0f}};
@@ -113,7 +114,7 @@ int main(){
 
 	// misc rendering modes
 	glEnable(GL_DEPTH_TEST);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// rendering loop
 	while(!glfwWindowShouldClose(contx.getWindow())){

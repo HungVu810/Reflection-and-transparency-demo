@@ -19,17 +19,12 @@ class glw_model{
 	public:
 		// ctor with all mapping, the mapings are optional (assuming the user want to assign the color via fragment shader)
 		glw_model(const std::string &model_path, std::vector<gl_texture> &model_material, bool flipUV){
-			Assimp::Importer imp;
-			importSceneModel(imp, model_path, flipUV);
-			processModelData(scene->mRootNode);
+			loadModelData(model_path, flipUV);
 			loadMaterial(model_material);
 		};
-
-		glw_model(const std::string &model_path, const glm::vec4 &vcolor){
-			Assimp::Importer imp;
+		glw_model(const std::string &model_path, const glm::vec4 vcolor = {0.5f, 0.5f, 0.5f, 0.0f}){
+			loadModelData(model_path, 0);
 			vertex_color = std::move(vcolor);
-			importSceneModel(imp, model_path, 0);
-			processModelData(scene->mRootNode);
 		};
 		// move ctor
 		// copy ctor
@@ -37,11 +32,9 @@ class glw_model{
 		// copy assigment
 		// dtor
 		~glw_model(){};
-
 		// Unload model data from vbo and ebo. Only do this when necessary
 		// because changing OpenGL state will slow down the rendering
 		// void unload(){ model_loaded = false; }
-
 		void draw(gl_program &program, GLenum usage){
 			// boolean to check for if the model is already loaded
 			// If draw more than one model, load all to the vao and vbo
@@ -66,7 +59,6 @@ class glw_model{
 				vbo.bind();
 				vbo.loadData(p.vbuf, usage);
 				vao.eboData(p.ebuf, usage);
-				// why 64, not 32 
 				vao.attribFormat(0, 3, GL_FLOAT, GL_FALSE, 32, (void*)0);
 				vao.attribFormat(1, 3, GL_FLOAT, GL_FALSE, 32, (void*)12);
 				vao.attribFormat(2, 2, GL_FLOAT, GL_FALSE, 32, (void*)24);
@@ -76,6 +68,18 @@ class glw_model{
 				glDrawElements(GL_TRIANGLES, p.ebuf.size(), GL_UNSIGNED_INT, (void*)0);
 			}
 		};
+		// this function uniformly scale the postion 3-vector of the model
+		void scale(float factor){
+			assert(factor >= 0);
+			for(part &p : model){
+				unsigned numVertices = p.vbuf.size() / 8;
+				for(size_t i = 0; i < numVertices; i++){
+					p.vbuf.data()[i * 8] *=  factor;
+					p.vbuf.data()[i * 8 + 1] *= factor;
+					p.vbuf.data()[i * 8 + 2] *= factor;
+				}
+			}
+		};
 	private:
 		//TODO; load each object/part (aiNode) of the model into the buffer independantly and draw them (tested by isolating each i) will load each part of the model fully. While load all aiNode object into the buffer all at once messed up the model. Tested by process a certain i children node without looping through everything in mChildren.
 		//TODO: how to deal with model that is not mapped to a texture. Make sure that the vertex does have an normal vector, otherwise assign (0, 0, 0) to the normal
@@ -83,8 +87,8 @@ class glw_model{
 			std::vector<float> vbuf; // vbo buffer, store continous vertices data. position (3), normal (3), texcoord(2) per vertex
 			std::vector<unsigned> ebuf; // ebo buffer, stores continous faces indicies. 3 indices per face
 		};
-		glm::vec4 vertex_color = glm::vec4{0.0f, 0.0f, 0.0f, 0.0f};
-		const aiScene *scene = nullptr;
+		// default grey color for untextured model
+		glm::vec4 vertex_color;
 		// map<string, gl_texture> material, run the original loadMaterial() on each mesh and look up the texture path as key
 		std::vector<gl_texture> material;  // material (contains all texture types and data)
 		std::vector<part> model;
@@ -99,15 +103,23 @@ class glw_model{
 			}
 		};
 
-		void importSceneModel(Assimp::Importer &imp, const std::string &model_path, bool flipUV){
+		void loadModelData(const std::string &model_path, bool flipUV){
+			Assimp::Importer imp;
+			const aiScene *scene = nullptr;
+			importSceneModelPtr(scene, imp, model_path, flipUV);
+			processModelData(scene, scene->mRootNode);
+		}
+
+		void importSceneModelPtr(const aiScene *&scene, Assimp::Importer &imp, const std::string &model_path, bool flipUV){
 			// TODO: skull uv need to be fliped while the guitar doesn't (flip texture if the texture look mess up, flip/don't flip the texture)
 			if(flipUV)
 				scene = imp.ReadFile(model_path, aiProcess_Triangulate | aiProcess_FlipUVs);
-			else scene = imp.ReadFile(model_path, aiProcess_Triangulate);
+			else
+				scene = imp.ReadFile(model_path, aiProcess_Triangulate);
 			assert(scene);
 		};
 
-		void processModelData(aiNode *n){
+		void processModelData(const aiScene *scene, aiNode *n){
 			// process meshes within in node n
 			for(unsigned i = 0; i < n->mNumMeshes; i++){
 				// a mesh is a part within a model
@@ -115,7 +127,7 @@ class glw_model{
 			}
 			// process children nodes, 4 max
 			for(unsigned i = 0; i < n->mNumChildren; i++){
-				processModelData(n->mChildren[i]);
+				processModelData(scene, n->mChildren[i]);
 			}
 		};
 
@@ -173,15 +185,6 @@ class glw_model{
 		// 			mat.push_back(tex);
 		// 		}
 		// 	}
-		// };
-
-		// void loadMaterial(){
-		// 	// texture loading, binding process slow down the program at lot, not vertex data loading
-		// 	// destructed gl_texture obj cause sampler to lost its data (blacked texture color)
-		// 	diff.loadData("/home/hungvu/Archive/progs/opengl/model/diffuse.jpg", aiTextureType_DIFFUSE);
-		// 	// spec.loadData("/home/hungvu/Archive/progs/opengl/model/specular.jpg", aiTextureType_SPECULAR);
-		// 	diff.bind(GL_TEXTURE0);
-		// 	// spec.bind(GL_TEXTURE1);
 		// };
 };
 
