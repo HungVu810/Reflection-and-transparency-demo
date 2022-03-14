@@ -1,0 +1,41 @@
+4. test large number of model rendering
+
+5. add a function to force use custom vertex color, and functions to get color, modifiy color instead of using the material texture coord
+
+5. group all cerr std out into the runtimeerror (make a struct of error each file or put them in the runtimeerror file)
+
+6. fix fov of the camera to prevent model stretching to the bottom/top edge when look up/down
+
+7. finish the model manager class instead of relying on the vector
+
+7. a map that manage all texture. If the texture is already loaded and assigned a sampler to the shader then skip and don't do it again.
+	8. if do this then loop through all the material per part
+
+8. continue with the learning (depth, stencil, shadow, lighting, ...)
+
+*. move ctor for model ?
+
+
+// -------------------
+2 CAMERA object
+1 static (observe the dynamic one)
+1 dynamic (the one need to be tested, attach 3 axis onto this camera)
+
+****** add a drawScene() to draw all passed in model as well as their shader (should there be a pointer to a shader in each model by default ? This will prevent addtional draw() function in model.h when drawing)
+// -------------------
+
+
+implemented
+	- Added camera.h and move the camera namespace into this file. seperated from handleInput.h which now only handle keyboard and mouse input.
+	- Moved projection and view matrix into camera.h. Each model object now has a model matrix for transform from local to world space when drawing.
+	- Add scale, rotate, translate function for model.h.
+	- Tweak vertex shader transformation matricies into one matrix. The multiplication is done once per each model drawing instead of for each vertices in the vertex shader as normal
+	- Rename glw_model.h into model.h
+	- Added a debugging view mode in the camera.h
+	- Added standard axis model for easier visualization
+	- Applied pitch, yaw and rotatate functionality for the camera
+	- Cleaned up header and main files
+	- Added another draw function with shader argument in model.h command since a model may need to link a custom shader (like light obj)
+	- Added shader_pipeline array in gl_program to manage currently attached shader in each shader stage (only gor vertex, geometry and fragment shader since the enum for tess shaders and compute shader is not IDed by the compilter)
+	- Change some naming of variables/ functions to match with the overall structure
+	- Redo some of the gl_program and gl_shader functions. gl_program is geared toward managing gl_shader objects

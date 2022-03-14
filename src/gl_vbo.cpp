@@ -1,6 +1,6 @@
-#include"../include/gl_vbo.h"
-#include"../include/runtime_except.h"
-#include<cassert>
+#include "../include/gl_vbo.h"
+#include "../include/runtime_except.h"
+#include <cassert>
 
 gl_vbo::gl_vbo() : gl_object(){
     glGenBuffers(1, &name);

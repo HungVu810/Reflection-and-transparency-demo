@@ -1,37 +1,37 @@
 #ifndef GLSHADER_H
 #define GLSHADER_H
-
-#include"./gl_object.h"
-#include<glad/glad.h>
-#include<GLFW/glfw3.h>
-#include<string>
-
-// #ifndef __glad_h
-// #error Glad is not initialized
-// #else
-// include shader.h at the end of the main.cpp preprocesser macros
-enum SHADER_TYPE {VERTEX_SHADER, GEOMETRY_SHADER, FRAGMENT_SHADER};
+#include "./gl_object.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <string>
 
 // wrapper of shader object
 class gl_shader : public gl_object{
-    public:
-        gl_shader(SHADER_TYPE shader_type);
-        ~gl_shader();
 
-        // get the shader source from path, load it into the given shader name and compile it
-        void compileSource(const std::string& path);
-        void attach(unsigned program);
-        void detach(unsigned program);
-        bool getAttachStatus() const;
+	public:
 
-    private:
-        std::string src;
-        unsigned int id;
-        // attach_status = 0 is detached
-        bool attach_status;
-        SHADER_TYPE type;
-        const char* getSource(const std::string& path);
-        void checkCompileStatus();
+		// GLenum shader type is one of: GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER
+		gl_shader(GLenum shaderType);
+
+		~gl_shader();
+
+		// load the given shader source from 'path'
+		void loadData(const std::string& path);
+
+		// compile the loaded shader source and check for the compilation status
+		void compile();
+
+		GLenum getType() const;
+
+	private:
+
+		std::string src;
+
+		GLenum type;
+
+		// convert the source file strings to a c-str
+		const char* srcToCstr(const std::string& path);
+
+		void checkCompileStatus();
 };
-
 #endif // GLSHADER_H

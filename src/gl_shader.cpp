@@ -1,46 +1,52 @@
-#include<../include/gl_shader.h>
-#include<iostream>
-#include<fstream>
-#include<cassert>
+#include "../include/gl_shader.h"
+#include <iostream>
+#include <fstream>
+#include <cassert>
 
-gl_shader::gl_shader(SHADER_TYPE shader_type) : gl_object(){
-    type = shader_type;
-    switch(type){
-        case VERTEX_SHADER: name = glCreateShader(GL_VERTEX_SHADER); break;
-        case GEOMETRY_SHADER: name = glCreateShader(GL_GEOMETRY_SHADER); break;
-        case FRAGMENT_SHADER: name = glCreateShader(GL_FRAGMENT_SHADER); break;
-    };
-    attach_status = 0;
+
+// GLenum shader type is one of: GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER
+gl_shader::gl_shader(GLenum shaderType) : gl_object(){
+	type = shaderType;
+	name  = glCreateShader(type);
+	switch(type){
+		case GL_VERTEX_SHADER: name = glCreateShader(GL_VERTEX_SHADER); break;
+		// case GL_TESS_CONTROL_SHADER: name = glCreateShader(GL_TESS_CONTROL_SHADER); break;
+		// case GL_TESS_EVALUATION_SHADER: name = glCreateShader(GL_TESS_EVALUATION_SHADER); break;
+		case GL_GEOMETRY_SHADER: name = glCreateShader(GL_GEOMETRY_SHADER); break;
+		case GL_FRAGMENT_SHADER: name = glCreateShader(GL_FRAGMENT_SHADER); break;
+		// case GL_COMPUTE_SHADER: name = glCreateShader(GL_COMPUTE_SHADER); break;
+		default:{
+			std::cerr << "Unknown GLenum shader type: " << shaderType << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+	}
 };
 
 gl_shader::~gl_shader(){
     glDeleteShader(name);
 };
 
-void gl_shader::compileSource(const std::string& path){
-    const char* csrc = getSource(path);
+// load the shader source from the given path
+void gl_shader::loadData(const std::string &path){
+    const char* csrc = srcToCstr(path);
     glShaderSource(name, 1, &csrc, nullptr);
+}
+
+// compile the loaded shader source and check for the compilation status
+void gl_shader::compile(){
+	assert(!src.empty());
     glCompileShader(name);
     checkCompileStatus();
 }
 
-void gl_shader::attach(unsigned program){
-    glAttachShader(program, name);
-    attach_status = 1;
-}
-
-void gl_shader::detach(unsigned program){
-    glDetachShader(program, name);
-    attach_status = 0;
-}
-
-bool gl_shader::getAttachStatus() const {
-    return attach_status;
-}
+GLenum gl_shader::getType() const{
+	return type;
+};
 
 // private
 
-const char* gl_shader::getSource(const std::string& path){
+// convert the source file strings to a c-str
+const char* gl_shader::srcToCstr(const std::string& path){
     std::fstream file{path};
     assert(file.is_open());
     std::string temp;
@@ -59,9 +65,9 @@ void gl_shader::checkCompileStatus(){
         glGetShaderInfoLog(name, 256, NULL, infolog);
         std::string which_shader;
         switch(type){
-            case VERTEX_SHADER: which_shader = "\nVERTEX SHADER LOG ======\n"; break;
-            case GEOMETRY_SHADER: which_shader = "\nGEOMETRY SHADER LOG ======\n "; break;
-            case FRAGMENT_SHADER: which_shader = "\nFRAGMENT SHADER LOG ======\n "; break;
+            case GL_VERTEX_SHADER: which_shader = "\nVERTEX SHADER LOG ======\n"; break;
+            case GL_GEOMETRY_SHADER: which_shader = "\nGEOMETRY SHADER LOG ======\n "; break;
+            case GL_FRAGMENT_SHADER: which_shader = "\nFRAGMENT SHADER LOG ======\n "; break;
         }
         std::cout << which_shader << infolog << std::endl;
         std::terminate();

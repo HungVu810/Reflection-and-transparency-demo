@@ -14,8 +14,6 @@ struct Material{
 	sampler2D ambient1;
 	sampler2D ambient2;
 	sampler2D diffuse0;
-	sampler2D diffuse1;
-	sampler2D diffuse2;
 	sampler2D specular0;
 	sampler2D specular1;
 	sampler2D specular2;
