@@ -122,6 +122,13 @@ build CMakeFiles/opengl.dir/src/glad.c.o: C_COMPILER__opengl_DEBUG ../src/glad.c
   OBJECT_DIR = CMakeFiles/opengl.dir
   OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
 
+build CMakeFiles/opengl.dir/src/light_model.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/light_model.cpp || cmake_object_order_depends_target_opengl
+  DEP_FILE = CMakeFiles/opengl.dir/src/light_model.cpp.o.d
+  FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
+  INCLUDES = -I../include
+  OBJECT_DIR = CMakeFiles/opengl.dir
+  OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
+
 build CMakeFiles/opengl.dir/src/main.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/main.cpp || cmake_object_order_depends_target_opengl
   DEP_FILE = CMakeFiles/opengl.dir/src/main.cpp.o.d
   FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
@@ -151,7 +158,7 @@ build CMakeFiles/opengl.dir/src/runtime_except.cpp.o: CXX_COMPILER__opengl_DEBUG
 #############################################
 # Link the executable bin/opengl
 
-build bin/opengl: CXX_EXECUTABLE_LINKER__opengl_DEBUG CMakeFiles/opengl.dir/src/gl_context.cpp.o CMakeFiles/opengl.dir/src/gl_object.cpp.o CMakeFiles/opengl.dir/src/gl_program.cpp.o CMakeFiles/opengl.dir/src/gl_shader.cpp.o CMakeFiles/opengl.dir/src/gl_texture.cpp.o CMakeFiles/opengl.dir/src/gl_vao.cpp.o CMakeFiles/opengl.dir/src/gl_vbo.cpp.o CMakeFiles/opengl.dir/src/glad.c.o CMakeFiles/opengl.dir/src/main.cpp.o CMakeFiles/opengl.dir/src/model.cpp.o CMakeFiles/opengl.dir/src/runtime_except.cpp.o
+build bin/opengl: CXX_EXECUTABLE_LINKER__opengl_DEBUG CMakeFiles/opengl.dir/src/gl_context.cpp.o CMakeFiles/opengl.dir/src/gl_object.cpp.o CMakeFiles/opengl.dir/src/gl_program.cpp.o CMakeFiles/opengl.dir/src/gl_shader.cpp.o CMakeFiles/opengl.dir/src/gl_texture.cpp.o CMakeFiles/opengl.dir/src/gl_vao.cpp.o CMakeFiles/opengl.dir/src/gl_vbo.cpp.o CMakeFiles/opengl.dir/src/glad.c.o CMakeFiles/opengl.dir/src/light_model.cpp.o CMakeFiles/opengl.dir/src/main.cpp.o CMakeFiles/opengl.dir/src/model.cpp.o CMakeFiles/opengl.dir/src/runtime_except.cpp.o
   FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
   LINK_LIBRARIES = -l:libglfw3.a  -lGL  -lX11  -lpthread  -lXrandr  -lXi  -ldl  -lassimp
   OBJECT_DIR = CMakeFiles/opengl.dir

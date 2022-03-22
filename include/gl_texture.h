@@ -9,13 +9,21 @@
 // texture info for a specific texture
 struct tex_info{
 	// path to texture
-	const char *path;
+	std::string path;
 	aiTextureType type;
 };
 
 class gl_texture : public gl_object{
 	public:
 		gl_texture();
+
+		// no copy of texture, use reference/pointer instead
+		gl_texture(const gl_texture &t) = delete;
+		gl_texture& operator=(const gl_texture &t) = delete;
+
+		// no moving of texture resource
+		gl_texture(gl_texture &&t) = delete;
+		gl_texture& operator=(gl_texture &&t) = delete;
 
 		~gl_texture();
 
@@ -38,10 +46,10 @@ class gl_texture : public gl_object{
 		// The static member count the total number of each type of gl_texture
 		// constructed. Add more if needed. The total number is used for
 		// assigning uniform variable string through the convention textypei.
-		static unsigned ambient,
-						diffuse,
-						specular,
-						emission;
+		// static unsigned ambient,
+		// 				diffuse,
+		// 				specular,
+		// 				emission;
 						// shininess
 
 		int width, height, channel;

@@ -1,15 +1,15 @@
 #include "../include/gl_texture.h"
 // header to extract texture data
 #define STB_IMAGE_IMPLEMENTATION
-#include <../include/stb_image.h>
+#include "../include/stb_image.h"
 #include <cassert>
 #include <iostream>
 
 // static init
-unsigned gl_texture::ambient = 0;
-unsigned gl_texture::diffuse = 0;
-unsigned gl_texture::specular = 0;
-unsigned gl_texture::emission = 0;
+// unsigned gl_texture::ambient = 0;
+// unsigned gl_texture::diffuse = 0;
+// unsigned gl_texture::specular = 0;
+// unsigned gl_texture::emission = 0;
 
 // associate sampler2D uniform variable with a texture unit via glUniform1i or glUniform1iv
 // unsigned ai_textureType is the unsinged equivalance of the aiTextureType enum class elements
@@ -35,7 +35,7 @@ void gl_texture::bind(GLenum GL_TEXTUREI){
 
 void gl_texture::loadData(const tex_info &t){
     // Define STBI_FAILURE_USERMSG to get user-friendly debug string
-    data = stbi_load(t.path, &width, &height, &channel, 0);
+    data = stbi_load(t.path.c_str(), &width, &height, &channel, 0);
 	assert(data);
 	// assignSamplerName(t.type);
 	type = t.type;

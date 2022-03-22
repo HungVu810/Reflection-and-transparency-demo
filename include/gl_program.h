@@ -7,6 +7,8 @@
 #include <functional>
 #include <cassert>
 #include <array>
+#include <iostream>
+#include <sstream>
 
 class gl_program : public gl_object{
 
@@ -18,8 +20,9 @@ class gl_program : public gl_object{
 
 		// attach a compiled shader into 1 of the 6 pipeline shader stage. If
 		// there is an already attached shader in the designated pipeline
-		// shader stage, the old shader is detached and the stage is attached
-		// with the given shader (MUST RELINK THE PROGRAM IF THIS IS THE CASE)
+		// shader stage and it is the same shader, do nothing. Otherwise, the
+		// old shader is detached and the stage is attached with the given
+		// shader (MUST RELINK THE PROGRAM IF THIS IS THE CASE)
 		void attachCompiledShader(const gl_shader *shader);
 
 		void link() const;
@@ -36,7 +39,29 @@ class gl_program : public gl_object{
 		void assignUniform(const char *uniform_name, void (*gl_uniform_fn)(GLint, Tp...), Tp... xp){
 			// make sure glLinkProgram and glUseProgram is called before assign uniforms
 			int location = glGetUniformLocation(name, uniform_name);
+			if(location == -1 && print_debug_unif){
+				std::cerr << "the uniform [" << uniform_name << "] is not a valid name" << std::endl;
+				// std::exit(EXIT_FAILURE);
+			}
 			gl_uniform_fn(location, xp...);
+		}
+
+		template<typename T>
+		static std::string creatUnifName(T arg){
+			std::ostringstream sstr;
+			sstr << arg;
+			return sstr.str();
+		}
+
+		template<typename T, typename ...Ptype>
+		static std::string creatUnifName(T arg, Ptype ...Pargs){
+			std::ostringstream sstr;
+			sstr << arg << creatUnifName(Pargs...);
+			return sstr.str();
+		}
+
+		void printDebugUniform(bool val){
+			print_debug_unif = val;
 		}
 
 	private:
@@ -50,9 +75,16 @@ class gl_program : public gl_object{
 		// index 5 is comp
 		const gl_shader *shader_pipeline[5] = {nullptr};
 
+		// turn off this value after the first rendering of a scene
+		bool print_debug_unif = 1;
+
+		// check the shader stage and attach, do nothing, or swap the current
+		// active shader at that stage with the given shader appropriately
+		void attachOrSwapShader(unsigned shader_stage, const gl_shader *shader);
+
 		void checkLinkStatus() const;
 
-		void attachOrSwapShader(unsigned shader_stage, const gl_shader *shader);
+		void checkAttachedShadersID() const;
 };
 
 #endif // GLPROGRAM_H

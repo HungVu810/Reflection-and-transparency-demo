@@ -26,8 +26,6 @@ void main(){
     /* frag_tex = tex; */
 	/* // the frag_... (intuiatively, they should be vec_...) but the value will be interpolated per fragment during the rasterization step */
 
-
-
 	gl_Position = pvm_mat * vec4(pos, 1.0f);
     frag_pos = vec3(vm_mat * vec4(pos, 1.0f));
     frag_normal = normalize(vec3(vm_mat * vec4(normal, 0.0f)));

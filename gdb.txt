@@ -1,0 +1,12 @@
+logging debugredirect:  The logging output mode is off.
+logging file:  The current logfile is "gdb.txt".
+logging overwrite:  Whether logging overwrites or appends to the log file is on.
+logging redirect:  The logging output mode is on.
+logging debugredirect:  The logging output mode is off.
+logging file:  The current logfile is "gdb.txt".
+logging overwrite:  Whether logging overwrites or appends to the log file is on.
+logging redirect:  The logging output mode is on.
+logging debugredirect:  The logging output mode is off.
+logging file:  The current logfile is "gdb.txt".
+logging overwrite:  Whether logging overwrites or appends to the log file is on.
+logging redirect:  The logging output mode is on.

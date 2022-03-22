@@ -14,60 +14,44 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <memory>
-
-// static model manager
-// class model_manager{
-// 	public:
-// 		model_manager() = default;
-// 		model_manager(size_t s){
-// 			try{
-// 				model_array = std::unique_ptr<model[]>(new model[s]);
-// 			}
-// 		};
-// 		model_manager(){};
-// 	private:
-// 		std::unique_ptr<model[]> model_array;
-// };
+#include <list>
+#include <unordered_map>
 
 class model{
 	 
 	public:
 
-		model() = default;
+		model() {};
 
 		// ctor with material
-		model(const std::string &path, const std::vector<tex_info> &mat_info, bool flipUV);
+		model(const std::string &path, const std::vector<tex_info> &mat_info, bool flipUV, const gl_shader *frag_shader);
 
 		// ctor without material
-		model(const std::string &path, const glm::vec4 &vcolor = {0.5f, 0.5f, 0.5f, 0.0f});
+		model(const std::string &path, const glm::vec4 &vcolor, const gl_shader *frag_shader);
 
 		// copy ctor
-		model(const model&m);
-
-		// move ctor
-		model(model&&m);
+		model(const model &m);
 
 		// copy assigment op
-		model& operator=(const model&m);
+		model& operator=(const model &m);
 
-		// move assignment op
-		model& operator=(model&&m);
+		// no moving of model object since there are many mem vars for explicit
+		// construction through args as well as no need to move one object resource to
+		// another
+		model(model &&m) = delete;
+		model& operator=(model &&m) = delete;
 
 		// dtor
-		~model() noexcept;
+		virtual ~model() noexcept;
 
 		// loadData with material
-		void loadData(const std::string &path, const std::vector<tex_info> &mat_info, bool flipUV);
+		void loadData(const std::string &path, const std::vector<tex_info> &mat_info, bool flipUV, const gl_shader *frag_shader);
 
 		// loadData without material
-		void loadData(const std::string &path, const glm::vec4 &vcolor = {0.5f, 0.5f, 0.5f, 0.0f});
+		void loadData(const std::string &path, const glm::vec4 &vcolor, const gl_shader *frag_shader);
 
 		// Renader the model with the currently attached fragment shader
 		void draw(gl_program &program, const glm::mat4 &projection, const glm::mat4 &view, GLenum usage);
-
-		// Replace the currently attached fragment shader with the provided
-		// 'fshader', relink the program and render the model
-		void draw(gl_program &program, const glm::mat4 &projection, const glm::mat4 &view, const gl_shader *fshader, GLenum usage);
 
 		// uniformly scale the model
 		void scale(float factor);
@@ -78,10 +62,18 @@ class model{
 		// rotate the model 'radian' angle around the given vector
 		void rotate(float radian, const glm::vec3 &v);
 
-		glm::vec4 getVertexColor() const;
+		// Undo all transformation(s) on the model matrix
+		void undoAllTransform();
+
+		// Undo the last transformation on the model matrix.
+		void undoLastTransform();
 
 		// change the current vertex color
 		void assignVertexColor(const glm::vec4 &vcolor);
+
+		glm::vec4 getVertexColor() const;
+
+		glm::vec3 getPosition();
 
 	private:
 
@@ -91,17 +83,36 @@ class model{
 			std::vector<float> vbuf;
 			// ebo buffer, stores continous faces indicies. 3 indices per face
 			std::vector<unsigned> ebuf;
+			// shininess level for the part's phong-specularity calculation
+			float shininess = -1;
 		};
+
+		static GLenum current_tex_unit;
+
+		// texture manager. A map contains pairs of texture info and a shared
+		// ptr to a gl_texture object. Used to get already loaded texture
+		// object for the material vector. We use the shared ptr to share the
+		// loaded texture with other model objects and avoid problem with
+		// creating a local texture object, assign it to texmap (dtor invoked
+		// on local texture) and do reference
+		static std::unordered_map<std::string, std::shared_ptr<gl_texture>> texmap;
+
+		// part manager. A map contains pairs of path to model data and a ptr
+		// to a vector of parts related to the model. Used to get an already
+		// loaded model parts for the *parts. Use shared ptr due to the reason
+		// identicial to the texmap
+		static std::unordered_map<std::string, std::shared_ptr<std::vector<part>>> partmap;
+
+		 // material contains all texture types and texture data needed for the
+		 // model
+		std::vector<std::shared_ptr<const gl_texture>> material;
+
+		// a structure contains each part, we render part of the model
+		// independently
+		std::shared_ptr<const std::vector<part>> parts = nullptr;
 
 		// default grey color for untextured model
 		glm::vec4 vertex_color{0.5f, 0.5f, 0.5f, 0.0f};
-
-		 // material (contains all texture types and data)
-		std::shared_ptr<gl_texture[]> material;
-		size_t numTex = 0;
-
-		// a structure contains each part, we render each of them independentlj
-		std::vector<part> part_struct;
 
 		gl_vao vao;
 
@@ -110,7 +121,12 @@ class model{
 		// model matrix for transforming local vertex to world vertex, default
 		// is an identity matrix. glm::mat4 projection and view matricies are in
 		// the camera file.
-		glm::mat4 model_mat{1.0f};
+		glm::mat4 modelmatx;
+		std::list<glm::mat4> matx_list;
+		bool matx_list_modified = 0;
+
+		// fragment shader used for render the model
+		const gl_shader *fshader = nullptr;
 
 		// load the material information into this material vector
 		void loadMaterial(const std::vector<tex_info> &mat_info);
@@ -120,10 +136,10 @@ class model{
 
 		// iterating through each node (part) in the scene (model) and process
 		// all the meshes data within
-		void processModelData(const aiScene *scene, aiNode *n);
+		void processModelData(std::vector<part> &parts, const aiScene *scene, aiNode *n);
 
 		// load mesh data into the part vbo buffer (vbuf) and ebo buffer (ebuf)
-		void loadMeshData(const aiMesh &mesh);
+		void loadMeshData(std::vector<part> &parts, const aiScene *scene, const aiMesh &mesh);
 
 		// load into vbo buffer
 		void loadVertices(const aiMesh &mesh, std::vector<float>& vbuf);
@@ -135,10 +151,15 @@ class model{
 		// (projection * vm_mat) in vertex shader for transformation of vertex
 		// postion
 		void assignVertexUniformTransMat(gl_program &program, const glm::mat4 &projection, const glm::mat4 &view);
-
 		// looping through each texture in the material and assign it texture unit
 		// to a sampler in the fragment shader.
 		void assignFragmentUniformSampler(gl_program &program);
+
+		void constructModelMatrix();
+
+		// construct a model matrix from the variables gathered in the
+		// model_matrix namespace
+		// glm::mat4 constructModelMatrix();
 
 		// CHECK IF THE TEXTURE IS ALREADY LOADED SO IT DOESN'T HAVE TO RELOAD THE SAME TEXTURE OBJECT
 		// void loadMaterial(const aiMesh &mesh){

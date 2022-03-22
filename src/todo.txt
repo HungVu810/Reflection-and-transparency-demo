@@ -1,12 +1,4 @@
-4. test large number of model rendering
-
-5. add a function to force use custom vertex color, and functions to get color, modifiy color instead of using the material texture coord
-
-5. group all cerr std out into the runtimeerror (make a struct of error each file or put them in the runtimeerror file)
-
 6. fix fov of the camera to prevent model stretching to the bottom/top edge when look up/down
-
-7. finish the model manager class instead of relying on the vector
 
 7. a map that manage all texture. If the texture is already loaded and assigned a sampler to the shader then skip and don't do it again.
 	8. if do this then loop through all the material per part
@@ -15,27 +7,102 @@
 
 *. move ctor for model ?
 
+// --------------------------------------------------------------
+transform that overwrite the old value vs transform that that continue from the current model matrix ?
 
-// -------------------
+
+5. add a function to force use custom vertex color, and functions to get color, modifiy color instead of using the material texture coord
+
+recheck for all 4 model constructor and make sure they work
+reimplement all function accepting vector or std::array into a pointer and a size_t
+
 2 CAMERA object
 1 static (observe the dynamic one)
 1 dynamic (the one need to be tested, attach 3 axis onto this camera)
 
+multiplies light object implementation (array of light objects) in a scene
+
 ****** add a drawScene() to draw all passed in model as well as their shader (should there be a pointer to a shader in each model by default ? This will prevent addtional draw() function in model.h when drawing)
+
+****** add light_model object, specialized model object for assign uniform light struct variable and other things
+
+************* CREATE A SCENE OBJECT, GET RID OF THE TWO ABOVE
+
+*** test with one light source first, then think of how to deal with multiple light source within a scene (calculate all diffuse/ specular on a fragment and multiply the result together to mix the color ?)
 // -------------------
 
+REBIND TEXTURE BECAUSE IF THERE IS ANOTHER OBJECT WITH MATERIAL THEN GLTEXTUREI WILL BE OVERWRITE
+
+~~~~~~~~~~~~~~ REMMEBER TO WRITE DOWN IF LEARN SOMEHTING NEW
+
+	void assignUniformName(gl_program &program){
+		program.assignUniform(getUniformName("direction"), glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(direction)));
+		program.assignUniform(getUniformName("position"), glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(getPosition())));
+		program.assignUniform(getUniformName("color"), glUniform3fv, 1, const_cast<const float*>(glm::value_ptr(light_color)));
+		program.assignUniform(getUniformName("inner_cone"), glUniform1f, inner_cone);
+		program.assignUniform(getUniformName("outer_cone"), glUniform1f, outer_cone);
+	}
+
+
+SWAP fragment shader (light_fshader) cause vertex shader to fuck up 
+
+Relink the program will affect the uniform variable at all shader stages (figure a way that changing the shader without causing this, so we can load light_fshader to the light_model object)
+
+Difference between arbitrary_matx = glm::transform_t(arbitrary_matx)
+			and arbitrary_matx = glm::transform_T(identity) * arbitrary_matx
+
+should transformation be done with respect to the current object axis/ state or with respect to the original axis/ identity state ?
+
+// --------------------------------------------------------------
 
 implemented
-	- Added camera.h and move the camera namespace into this file. seperated from handleInput.h which now only handle keyboard and mouse input.
-	- Moved projection and view matrix into camera.h. Each model object now has a model matrix for transform from local to world space when drawing.
-	- Add scale, rotate, translate function for model.h.
-	- Tweak vertex shader transformation matricies into one matrix. The multiplication is done once per each model drawing instead of for each vertices in the vertex shader as normal
-	- Rename glw_model.h into model.h
-	- Added a debugging view mode in the camera.h
-	- Added standard axis model for easier visualization
-	- Applied pitch, yaw and rotatate functionality for the camera
-	- Cleaned up header and main files
-	- Added another draw function with shader argument in model.h command since a model may need to link a custom shader (like light obj)
-	- Added shader_pipeline array in gl_program to manage currently attached shader in each shader stage (only gor vertex, geometry and fragment shader since the enum for tess shaders and compute shader is not IDed by the compilter)
-	- Change some naming of variables/ functions to match with the overall structure
-	- Redo some of the gl_program and gl_shader functions. gl_program is geared toward managing gl_shader objects
+	fixed the loadMaterial() with multiple objects with different material as the texture unit is reset back to GL_TEXTURE0 for each loadMaterial() for each object instead of keep incrementing the value
+	added a scene file to draw a scene (including both light_model and normal model objects).
+	added a matrix list for the convience of constructing the model matrix for both dynamic/static model object.
+	added undoAllTransMMatx and undoLastTransMMatx in model to support proper transformation of dynamic objects.
+	changed scale(), rotate() and translate() in model to work properly with the matrix list
+	tested with multiple lighting models within a scene
+	change the draw() function to not link the program again after reattach another shader because of issues assigning uniforms after relink the program.
+	added printDebugUniform() in program to turn on/off the printing of unfounded uniforms
+	added createUnifName() in scene.h to replace the getUniformName() in light_model.h
+
+
+Notes:
+	BE CAREFUL ABOUT THE OPERANDS' ORDER WHEN APPLYING MATRIX MULTIPLICATION
+	Drawn models are only displayed after swapbuffer()
+	Do not overwrite the active texture unit of the previously assigned texture name id
+	Do not relink a used program after attach, detach a shader (caused problem with the uniforms)
+
+TODO:
+	Highlight (outline) object on click (stencil)
+	Add billboard letter to the axis (x, y, -z)
+	Add an expanded plane in the -z & x plane
+	change the axis from model to lines 
+		-> init the axis lines and plane, then render them in the while loop with the model
+
+
+WHY MAP NEEDED COPY CTOR FOR GL_OBJECT IF WE ARE USING SHARED_PTR POINTING TO THE GL_OBJECT ?
+	test 2 model object with different materail
+	test multiple same object without reloading the material if the texture is already loaded
+
+	test multiple light source
+	test large number of model rendering
+	group all cerr, exception std out into the runtimeerror (make a struct of error each file or put them in the runtimeerror file)
+		group all assert to display message
+
+	make the ctor and op= works as intended for model and light_model
+
+	object with different shader that swaped after light uniform is assigned to a model object
+
+	deadly signal thrown when pressed q
+
+	implement an is_directional_light bool in light_model (changing between directional and point light + spotlight)
+
+	assign fshader but don't mess up the uniform (by not link the program ? )
+
+PROJECT GOALS
+	Transparent Demo (cube, sphere, triangle,...)
+	One cutscene (flying camera, static camera)
+	One displaying effects (fire, water, waterfall,..., wind blow tree)
+	One displaying shader (different kinds of gems reflection)
+	One functional game with UI

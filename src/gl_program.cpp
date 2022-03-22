@@ -20,6 +20,7 @@ void gl_program::attachCompiledShader(const gl_shader *shader){
 		case GL_FRAGMENT_SHADER: attachOrSwapShader(4, shader); break;
 		// case GL_COMPUTE_SHADER: attachOrSwapShader(5, shader); break;
 	}
+	// checkAttachedShadersID();
 };
 
 void gl_program::link() const{
@@ -47,8 +48,21 @@ void gl_program::checkLinkStatus() const{
 void gl_program::attachOrSwapShader(unsigned shader_stage, const gl_shader *shader){
 	// swap with the currently attached shader in the shader_stage
 	if(shader_pipeline[shader_stage]){
-		glDetachShader(name, shader_pipeline[shader_stage]->getID());
+		if(shader_pipeline[shader_stage]->getID() == shader->getID())
+			return;
+		else glDetachShader(name, shader_pipeline[shader_stage]->getID());
 	}
 	glAttachShader(name, shader->getID());
 	shader_pipeline[shader_stage] = shader;
+};
+
+void gl_program::checkAttachedShadersID() const{
+	unsigned shaderID[5] {0};
+	GLsizei count;
+	glGetAttachedShaders(name, 5, &count, shaderID);
+	std::cout << "Currently attached shader IDs: ";
+	for(size_t i = 0; i < count; i++){
+		std::cout << shaderID[i] << (i != count - 1 ? ", " : "");
+	}
+	std::cout << std::endl;
 };

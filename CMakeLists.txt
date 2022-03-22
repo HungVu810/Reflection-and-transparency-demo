@@ -22,6 +22,9 @@ set(OPENGL_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 # set(COMPILE_FLAGS "-std=c++11 -Wall -pedantic-errors -Werror -g")
 
+# to get rid of [abi::cx11]
+# add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
+
 file(GLOB SOURCE_FILES src/*)
 # set(SOURCE_FILES
 #     src/main.cpp
