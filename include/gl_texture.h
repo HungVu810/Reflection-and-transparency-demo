@@ -7,11 +7,11 @@
 
 
 // texture info for a specific texture
-struct tex_info{
-	// path to texture
-	std::string path;
-	aiTextureType type;
-};
+// struct tex_info{
+// 	// path to texture
+// 	std::string path;
+// 	aiTextureType type;
+// };
 
 class gl_texture : public gl_object{
 	public:
@@ -29,7 +29,7 @@ class gl_texture : public gl_object{
 
 		void bind(GLenum GL_TEXTUREI);
 
-		void loadData(const tex_info &t);
+		void loadData(const std::string &path, aiTextureType texType);
 
 		// Return the texture unit of this gl_texture assigned via bind(),
 		// minus GL_TEXTURE0. Used with glUniform to assign the texture unit to

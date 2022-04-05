@@ -1,0 +1,72 @@
+[
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/g++ -I.././include -std=c++11 -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/camera.cpp.o -c /home/hungvu/Archive/progs/opengl/src/camera.cpp",
+  "file": "/home/hungvu/Archive/progs/opengl/src/camera.cpp"
+},
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/g++ -I.././include -std=c++11 -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/gl_context.cpp.o -c /home/hungvu/Archive/progs/opengl/src/gl_context.cpp",
+  "file": "/home/hungvu/Archive/progs/opengl/src/gl_context.cpp"
+},
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/g++ -I.././include -std=c++11 -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/gl_object.cpp.o -c /home/hungvu/Archive/progs/opengl/src/gl_object.cpp",
+  "file": "/home/hungvu/Archive/progs/opengl/src/gl_object.cpp"
+},
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/g++ -I.././include -std=c++11 -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/gl_program.cpp.o -c /home/hungvu/Archive/progs/opengl/src/gl_program.cpp",
+  "file": "/home/hungvu/Archive/progs/opengl/src/gl_program.cpp"
+},
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/g++ -I.././include -std=c++11 -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/gl_shader.cpp.o -c /home/hungvu/Archive/progs/opengl/src/gl_shader.cpp",
+  "file": "/home/hungvu/Archive/progs/opengl/src/gl_shader.cpp"
+},
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/g++ -I.././include -std=c++11 -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/gl_texture.cpp.o -c /home/hungvu/Archive/progs/opengl/src/gl_texture.cpp",
+  "file": "/home/hungvu/Archive/progs/opengl/src/gl_texture.cpp"
+},
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/g++ -I.././include -std=c++11 -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/gl_vao.cpp.o -c /home/hungvu/Archive/progs/opengl/src/gl_vao.cpp",
+  "file": "/home/hungvu/Archive/progs/opengl/src/gl_vao.cpp"
+},
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/g++ -I.././include -std=c++11 -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/gl_vbo.cpp.o -c /home/hungvu/Archive/progs/opengl/src/gl_vbo.cpp",
+  "file": "/home/hungvu/Archive/progs/opengl/src/gl_vbo.cpp"
+},
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/gcc -I.././include -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/glad.c.o -c /home/hungvu/Archive/progs/opengl/src/glad.c",
+  "file": "/home/hungvu/Archive/progs/opengl/src/glad.c"
+},
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/g++ -I.././include -std=c++11 -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/handleInput.cpp.o -c /home/hungvu/Archive/progs/opengl/src/handleInput.cpp",
+  "file": "/home/hungvu/Archive/progs/opengl/src/handleInput.cpp"
+},
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/g++ -I.././include -std=c++11 -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/light_model.cpp.o -c /home/hungvu/Archive/progs/opengl/src/light_model.cpp",
+  "file": "/home/hungvu/Archive/progs/opengl/src/light_model.cpp"
+},
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/g++ -I.././include -std=c++11 -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/main.cpp.o -c /home/hungvu/Archive/progs/opengl/src/main.cpp",
+  "file": "/home/hungvu/Archive/progs/opengl/src/main.cpp"
+},
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/g++ -I.././include -std=c++11 -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/model.cpp.o -c /home/hungvu/Archive/progs/opengl/src/model.cpp",
+  "file": "/home/hungvu/Archive/progs/opengl/src/model.cpp"
+},
+{
+  "directory": "/home/hungvu/Archive/progs/opengl/build",
+  "command": "/usr/bin/g++ -I.././include -std=c++11 -fdiagnostics-color=always -g -o CMakeFiles/opengl.dir/src/runtime_except.cpp.o -c /home/hungvu/Archive/progs/opengl/src/runtime_except.cpp",
+  "file": "/home/hungvu/Archive/progs/opengl/src/runtime_except.cpp"
+}
+]

@@ -10,6 +10,8 @@
 #include <iostream>
 #include <sstream>
 
+#define fval_ptr(arg) const_cast<const float*>(glm::value_ptr(arg))
+
 class gl_program : public gl_object{
 
 	public:
@@ -22,7 +24,7 @@ class gl_program : public gl_object{
 		// there is an already attached shader in the designated pipeline
 		// shader stage and it is the same shader, do nothing. Otherwise, the
 		// old shader is detached and the stage is attached with the given
-		// shader (MUST RELINK THE PROGRAM IF THIS IS THE CASE)
+		// shader and relink is done automatically 
 		void attachCompiledShader(const gl_shader *shader);
 
 		void link() const;
@@ -64,6 +66,10 @@ class gl_program : public gl_object{
 			print_debug_unif = val;
 		}
 
+		void printDebugAttachedShadersID(bool val){
+			print_debug_attached_shaders_id = val;
+		}
+
 	private:
 
 		// manages the currently active shader in each part of the pipeline
@@ -76,7 +82,8 @@ class gl_program : public gl_object{
 		const gl_shader *shader_pipeline[5] = {nullptr};
 
 		// turn off this value after the first rendering of a scene
-		bool print_debug_unif = 1;
+		bool print_debug_unif = 0;
+		bool print_debug_attached_shaders_id = 0;
 
 		// check the shader stage and attach, do nothing, or swap the current
 		// active shader at that stage with the given shader appropriately

@@ -24,8 +24,6 @@ class light_model : public model{
 
 	~light_model(){};
 
-	void assignDirection(const glm::vec3& dir);
-
 	void assignOuterConeAngle(float radian);
 
 	void assignInnerConeAngle(float radian);
@@ -33,8 +31,6 @@ class light_model : public model{
 	// void assignLightColor(const glm::vec4& lcolor){
 	// 	light_color = lcolor;
 	// };
-
-	glm::vec3 getDirection() const;
 
 	float getOuterConeAngle() const;
 
@@ -47,7 +43,6 @@ class light_model : public model{
 	private:
 		// use the vertex_color for the light_color
 		// glm::vec4 light_color{0.5f, 0.5f, 0.5f, 0.0f};
-		glm::vec3 direction{0.0f, 0.0f, -1.0f};
 		float outer_cone{0.0f};
 		float inner_cone{0.0f};
 };

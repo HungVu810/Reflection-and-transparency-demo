@@ -11,12 +11,12 @@ class gl_shader : public gl_object{
 	public:
 
 		// GLenum shader type is one of: GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER
-		gl_shader(GLenum shaderType);
+		gl_shader(const std::string &shader_path, bool loadAndCompile = 0);
 
 		~gl_shader();
 
-		// load the given shader source from 'path'
-		void loadData(const std::string& path);
+		// load the shader source from the formated one line cstr from ctor shader_path
+		void loadData();
 
 		// compile the loaded shader source and check for the compilation status
 		void compile();
@@ -25,12 +25,16 @@ class gl_shader : public gl_object{
 
 	private:
 
-		std::string src;
+		// one line format string version of the source file
+		std::string oneline_src {""};
 
 		GLenum type;
 
+		// return the shader file extension from path
+		GLenum checkShaderExtension(const std::string &shader_path);
+
 		// convert the source file strings to a c-str
-		const char* srcToCstr(const std::string& path);
+		void srcToCstr(const std::string& path);
 
 		void checkCompileStatus();
 };

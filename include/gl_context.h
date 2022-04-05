@@ -17,14 +17,24 @@ class gl_object;
 class gl_context{
     public:
         static std::stack<gl_object> st_glObject;
+
         gl_context(unsigned int width, unsigned int height, std::string wname);
+
         ~gl_context() noexcept;
 
         GLFWwindow* getWindow();
+
+		// change the window title name
+		void assignWindowTitle(const std::string &n);
+
         unsigned width() const;
+
         unsigned height() const;
+
     private:
+
         GLFWwindow *window;
+
         unsigned win_width, win_height;
 };
 

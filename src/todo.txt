@@ -44,10 +44,6 @@ REBIND TEXTURE BECAUSE IF THERE IS ANOTHER OBJECT WITH MATERIAL THEN GLTEXTUREI 
 	}
 
 
-SWAP fragment shader (light_fshader) cause vertex shader to fuck up 
-
-Relink the program will affect the uniform variable at all shader stages (figure a way that changing the shader without causing this, so we can load light_fshader to the light_model object)
-
 Difference between arbitrary_matx = glm::transform_t(arbitrary_matx)
 			and arbitrary_matx = glm::transform_T(identity) * arbitrary_matx
 
@@ -55,30 +51,77 @@ should transformation be done with respect to the current object axis/ state or 
 
 // --------------------------------------------------------------
 
+vbuf.push_back(mesh.mTextureCoords[0][i].x);
+vbuf.push_back(mesh.mTextureCoords[0][i].y);
+for mirror ?
+
+
 implemented
-	fixed the loadMaterial() with multiple objects with different material as the texture unit is reset back to GL_TEXTURE0 for each loadMaterial() for each object instead of keep incrementing the value
-	added a scene file to draw a scene (including both light_model and normal model objects).
-	added a matrix list for the convience of constructing the model matrix for both dynamic/static model object.
-	added undoAllTransMMatx and undoLastTransMMatx in model to support proper transformation of dynamic objects.
-	changed scale(), rotate() and translate() in model to work properly with the matrix list
-	tested with multiple lighting models within a scene
-	change the draw() function to not link the program again after reattach another shader because of issues assigning uniforms after relink the program.
-	added printDebugUniform() in program to turn on/off the printing of unfounded uniforms
-	added createUnifName() in scene.h to replace the getUniformName() in light_model.h
+	automatically relink the program after sucessful swapped two shaders
+	added a lights pointer to an array of lights for draw()
+	added billboard function to model.h to turn a model into a billboard (both 2D and 3D)
+	remove fshader member ptr and provide it in draw() instead for easier swapping of fshader
+	display fps in the window title instead of cerr
+	change the scale(), rotate(), translate() function, got rid of the matx_list, undoAllTransform() and undoLastTransform() functions. Now each model only have one array of matrix of size 3, in the order of scale, rotate and translate to preserve the consistency.
+
+	display current shader id(s) attached after each compileAttachShader() calls
+
+	major overhauld for model.h
+	change the loadMaterial(). Now directly load materials using the given model_path str and the assimp::get() function to extract the texture name for each texture that a mesh need.
+	remove tex_info
+	disallow assigning color to ctor of model
+	remove billboardMode to auxFunctions.h keep the model.h maintainability
+	remove light_model in draw()
+	remove auto assignment of vertex_color in draw()
+	change gl_shader ctor to only accept "path", given path should have one of the extension of type .vert, .tesc, .tese, .geom, .frag or .comp
+	remove get and assignDirection() in light_model.h, those funcs are already in model.h
+	added glGetDebugMessageLog() to display debug
+
+Notes and random learnings:
+	Multi-drawing if (same set of shaders, 1 vao, 1 vbo), different objects
+	Instanced drawing if same object multiple times
+	Otherwise normal drawing
+	Multidrawindirect for to choose either/or multi-draw or instanced
+	https://www.reddit.com/r/opengl/comments/9q8t05/instancing_vs_glmultidrawelements/
 
 
-Notes:
+	Think to remember when dealing with stencilling and depth test
+		part are draw independant
+	-> can be fixed with batched drawing ?
+	-> use one vao (ebo), vbo for dynamic draw
+	-> one vao (ebo), vbo for static draw
+
+	Disable depth test spareingly because of the over drawn
+	
 	BE CAREFUL ABOUT THE OPERANDS' ORDER WHEN APPLYING MATRIX MULTIPLICATION
 	Drawn models are only displayed after swapbuffer()
 	Do not overwrite the active texture unit of the previously assigned texture name id
-	Do not relink a used program after attach, detach a shader (caused problem with the uniforms)
+	No depth test = no fragment is discarded and most recently drawn object at the top
+	Drawn fragment do not manipulate the stencil value, the thing that manipulate the stencil value in the buffer is the StencilOp, which is based on the stencil test (func) and depth test (func)
+	Pay attention to the draw() order of the objects
+	A bitmask is like a rule for which bit can be modified, the stencil buffer is like the depth buffer (2D array for each pixel), stencil value is 8bit, the bitmask is also 8 bit (00000000 (0x00) disable writting to all bits, 11111111 (0xFF) enable writting to all bits).
+	The (ref && mask) is the stencil value that mask over every fragment's stencil value the drawn object, which are then compared to the (buf stencil val && mask) in the stencil buffer for each equivalence fragment
+	Learn more about stencil front and back face
+
+	https://community.khronos.org/t/horizontal-vertical-fov-glm-projection-matrix/73854
+	Depth test disabled = no write depth buffer + no discard frag (2D)
+	cat /proc/<pid of program>/maps it will list where each dynamic library is loaded in the process
+	renderdoc failed because of the -fsanitizer=address flag in cmake
+	grep -r "string" <path> to find string in path files
+	#define GET_VARIABLE_NAME(Variable) (#Variable) to stringify a variable name (ie: const char* str = GET_VARIABLE_NAME(SOME_NAME))
+	sudo apt autoremove --purge
+
+	n-d vector into n-array example: vec<vec<int>> v, vec<int*> k, push back v[i].data() into k then do k.data()
+
 
 TODO:
+	remove scene.h ?
 	Highlight (outline) object on click (stencil)
 	Add billboard letter to the axis (x, y, -z)
 	Add an expanded plane in the -z & x plane
 	change the axis from model to lines 
 		-> init the axis lines and plane, then render them in the while loop with the model
+	DO assert(0) instead of std::exit(exit_failure) because std::exit doesn't do any cleanup
 
 
 WHY MAP NEEDED COPY CTOR FOR GL_OBJECT IF WE ARE USING SHARED_PTR POINTING TO THE GL_OBJECT ?

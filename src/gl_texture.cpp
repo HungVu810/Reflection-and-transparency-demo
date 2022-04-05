@@ -33,16 +33,18 @@ void gl_texture::bind(GLenum GL_TEXTUREI){
     glBindTexture(GL_TEXTURE_2D, name);
 }
 
-void gl_texture::loadData(const tex_info &t){
+void gl_texture::loadData(const std::string &path, aiTextureType texType){
     // Define STBI_FAILURE_USERMSG to get user-friendly debug string
-    data = stbi_load(t.path.c_str(), &width, &height, &channel, 0);
-	assert(data);
+    data = stbi_load(path.c_str(), &width, &height, &channel, 0);
+	if(!data){
+		std::cerr << path.c_str() << " is not a proper texture path" << std::endl;
+	}
 	// assignSamplerName(t.type);
-	type = t.type;
+	type = texType;
 	// make sure to check to alpha value, png format need GL_RGBA (alpha channel) instead of GL_RGB
     glTexImage2D(GL_TEXTURE_2D,
                  0,
-                 GL_RGB,
+                 channel == 3 ? GL_RGB : GL_RGBA,
                  width,
                  height,
                  0,

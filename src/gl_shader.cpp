@@ -5,20 +5,13 @@
 
 
 // GLenum shader type is one of: GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER
-gl_shader::gl_shader(GLenum shaderType) : gl_object(){
-	type = shaderType;
-	name  = glCreateShader(type);
-	switch(type){
-		case GL_VERTEX_SHADER: name = glCreateShader(GL_VERTEX_SHADER); break;
-		// case GL_TESS_CONTROL_SHADER: name = glCreateShader(GL_TESS_CONTROL_SHADER); break;
-		// case GL_TESS_EVALUATION_SHADER: name = glCreateShader(GL_TESS_EVALUATION_SHADER); break;
-		case GL_GEOMETRY_SHADER: name = glCreateShader(GL_GEOMETRY_SHADER); break;
-		case GL_FRAGMENT_SHADER: name = glCreateShader(GL_FRAGMENT_SHADER); break;
-		// case GL_COMPUTE_SHADER: name = glCreateShader(GL_COMPUTE_SHADER); break;
-		default:{
-			std::cerr << "Unknown GLenum shader type: " << shaderType << std::endl;
-			std::exit(EXIT_FAILURE);
-		}
+gl_shader::gl_shader(const std::string &shader_path, bool loadAndCompile) : gl_object(){
+	type = checkShaderExtension(shader_path);
+	name = glCreateShader(type);
+	srcToCstr(shader_path);
+	if(loadAndCompile){
+		loadData();
+		compile();
 	}
 };
 
@@ -26,15 +19,15 @@ gl_shader::~gl_shader(){
     glDeleteShader(name);
 };
 
-// load the shader source from the given path
-void gl_shader::loadData(const std::string &path){
-    const char* csrc = srcToCstr(path);
-    glShaderSource(name, 1, &csrc, nullptr);
+// load the shader source from the formated one line cstr from ctor shader_path
+void gl_shader::loadData(){
+	assert(oneline_src.size());
+	const char *cstr = oneline_src.c_str();
+    glShaderSource(name, 1, &cstr, nullptr);
 }
 
 // compile the loaded shader source and check for the compilation status
 void gl_shader::compile(){
-	assert(!src.empty());
     glCompileShader(name);
     checkCompileStatus();
 }
@@ -45,16 +38,38 @@ GLenum gl_shader::getType() const{
 
 // private
 
+GLenum gl_shader::checkShaderExtension(const std::string &shader_path){
+	size_t cindex = shader_path.rfind('.');
+	std::string fileExt = shader_path.substr(cindex + 1, shader_path.size() - cindex);
+	if(fileExt == shader_path){
+		std::cerr << "shader_path" << " has invalid file extension (must be one of .vert, .geom or .frag)" << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	if(fileExt == "vert") return GL_VERTEX_SHADER;
+	// if(fileExt == "tesc") return GL_TESS_CONTROL_SHADER;
+	// if(fileExt == "tese") return GL_TESS_EVALUATION_SHADER;
+	if(fileExt == "geom") return GL_GEOMETRY_SHADER;
+	if(fileExt == "frag") return GL_FRAGMENT_SHADER;
+	// if(fileExt == "comp") return GL_COMPUTE_SHADER;
+	else {
+		std::cerr << "shader_path" << " has invalid file extension (must be one of .vert, .geom or .frag)" << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+};
+
 // convert the source file strings to a c-str
-const char* gl_shader::srcToCstr(const std::string& path){
+void gl_shader::srcToCstr(const std::string& path){
     std::fstream file{path};
-    assert(file.is_open());
-    std::string temp;
-    while(getline(file, temp)){
-        src += (temp += '\n');
-    }
-    const char* csrc = src.c_str();
-    return csrc;
+	if(!file.is_open()){
+		std::cerr << path << " can't be read" << std::endl;
+		assert(0);
+	}
+	else{
+		std::string temp;
+		while(getline(file, temp)){
+			oneline_src += (temp += '\n');
+		}
+	}
 };
 
 void gl_shader::checkCompileStatus(){

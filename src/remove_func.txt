@@ -1,0 +1,20 @@
+// control whether to active/disable billboard mode for this object. Must use
+// with assignDirection() for the desired effect. The rotating operation is be
+// disabled if the billboard is active
+void model::billboardMode(bool val){
+	billboard_enabled = val;
+};
+
+if(billboard_enabled){
+	glm::vec3 target_direction = glm::normalize(camera::position - getPosition());
+	glm::vec3 rotate_axis = glm::cross(direction, target_direction);
+	float rotate_angle = glm::acos(glm::dot(direction, target_direction));
+	// matx_list_modified changed to 1 to apply modelmatx with the
+	// billboard rotating matx at the end
+	modelmatx_op[1] = glm::rotate(glm::mat4{1.0f}, rotate_angle, rotate_axis);
+	modelmatx_op_modified = 1;
+}
+
+
+program.assignUniform("material.use_vertex_color", glUniform1i, (int)!material.size());
+program.assignUniform("material.vertex_color", glUniform4fv, 1, const_cast<const float*>(glm::value_ptr(vertex_color)));

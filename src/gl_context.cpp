@@ -41,6 +41,11 @@ GLFWwindow* gl_context::getWindow(){
     return window;
 }
 
+// change the window title name
+void gl_context::assignWindowTitle(const std::string &n){
+	glfwSetWindowTitle(window, n.c_str());
+}
+
 unsigned gl_context::width() const {
     return win_width;
 }

@@ -6,6 +6,7 @@
 #include "./gl_texture.h"
 #include "./gl_shader.h"
 #include "./gl_program.h"
+#include "./camera.h"
 #include "./runtime_except.h"
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
@@ -14,20 +15,17 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <memory>
-#include <list>
+#include <array>
 #include <unordered_map>
 
 class model{
-	 
 	public:
 
-		model() {};
+		model() = default;
 
-		// ctor with material
-		model(const std::string &path, const std::vector<tex_info> &mat_info, bool flipUV, const gl_shader *frag_shader);
-
-		// ctor without material
-		model(const std::string &path, const glm::vec4 &vcolor, const gl_shader *frag_shader);
+		// normal ctor with path to the model. flipUV to flip the uv mapping of texture
+		// coord to OpenGL top-left convention, default is enabled
+		model(const std::string &path, bool flipUV = 1);
 
 		// copy ctor
 		model(const model &m);
@@ -44,47 +42,56 @@ class model{
 		// dtor
 		virtual ~model() noexcept;
 
-		// loadData with material
-		void loadData(const std::string &path, const std::vector<tex_info> &mat_info, bool flipUV, const gl_shader *frag_shader);
+		// load data with path to the model. flipUV to flip the uv mapping of texture
+		// coord to OpenGL top-left convention, default is enabled
+		void loadData(const std::string &path, bool flipUV = 1);
 
-		// loadData without material
-		void loadData(const std::string &path, const glm::vec4 &vcolor, const gl_shader *frag_shader);
+		// render the model with the currently attached fragment shader
+		void draw(gl_program &program, const gl_shader *fshader, const glm::mat4 &projection = camera::projection, const glm::mat4 &view = camera::view, GLenum usage = GL_STATIC_DRAW);
 
-		// Renader the model with the currently attached fragment shader
-		void draw(gl_program &program, const glm::mat4 &projection, const glm::mat4 &view, GLenum usage);
+		// the first operation applied to the identity model matrix.
+		// Uniformly scale the model. Default is 1.0f (no scaling of the
+		// model) if no argument is given.
+		void scale(float factor = 1.0f);
 
-		// uniformly scale the model
-		void scale(float factor);
+		// the second operation applied to the identity model matrix. Rotate the
+		// model 'radian' angle around the given vector. Default is axis =
+		// glm::vec3{1.0f, 0.0f, 0.0f}, radian = 0 (no rotation of the model)
+		// if no arguments are given.
+		void rotate(const glm::vec3 &axis = glm::vec3{1.0f, 0.0f, 0.0f}, float radian = 0.0f);
 
-		// translate the model to the given vector position
-		void translate(const glm::vec3 &v);
-
-		// rotate the model 'radian' angle around the given vector
-		void rotate(float radian, const glm::vec3 &v);
-
-		// Undo all transformation(s) on the model matrix
-		void undoAllTransform();
-
-		// Undo the last transformation on the model matrix.
-		void undoLastTransform();
+		// the third operation applied to the identity model matrix. Translate
+		// the model to the given vector position. Default is glm::vec3{0.0f,
+		// 0.0f, 0.0f} (no translating of the model) if no argument is given.
+		void translate(const glm::vec3 &v = glm::vec3{0.0f, 0.0f, 0.0f});
 
 		// change the current vertex color
 		void assignVertexColor(const glm::vec4 &vcolor);
 
+		// change the model's original looking direction
+		void assignDirection(const glm::vec3 &dir);
+
 		glm::vec4 getVertexColor() const;
+
+		glm::vec3 getDirection() const;
 
 		glm::vec3 getPosition();
 
+		// return the depth value of the model in the view space
+		float getViewDepth(const glm::mat4 &view = camera::view);
+
 	private:
 
-		// each part of the model are drawn independantly since drawing the whole model messed up the texture
-		struct part{
+		// each model's mesh are drawn independantly since drawing the whole model messed up the texture
+		struct mesh{
 			// store continous vertices data. position (3), normal (3), texcoord(2) per vertex
 			std::vector<float> vbuf;
 			// ebo buffer, stores continous faces indicies. 3 indices per face
 			std::vector<unsigned> ebuf;
-			// shininess level for the part's phong-specularity calculation
-			float shininess = -1;
+			// textures for this mesh
+			std::vector<std::shared_ptr<gl_texture>> material;
+			// shininess level for the mesh's phong-specularity calculation
+			float shininess = -1.0f;
 		};
 
 		static GLenum current_tex_unit;
@@ -92,100 +99,78 @@ class model{
 		// texture manager. A map contains pairs of texture info and a shared
 		// ptr to a gl_texture object. Used to get already loaded texture
 		// object for the material vector. We use the shared ptr to share the
-		// loaded texture with other model objects and avoid problem with
-		// creating a local texture object, assign it to texmap (dtor invoked
-		// on local texture) and do reference
-		static std::unordered_map<std::string, std::shared_ptr<gl_texture>> texmap;
+		// loaded texture with other model objects and avoid problem of making
+		// a new openGL object name for a local object and assign it to a
+		// non-local object, making the dtor called on the non-local object.
+		static std::unordered_map<std::string, std::shared_ptr<gl_texture>> textures_map;
 
-		// part manager. A map contains pairs of path to model data and a ptr
-		// to a vector of parts related to the model. Used to get an already
-		// loaded model parts for the *parts. Use shared ptr due to the reason
+		 // textures used by this model
+		std::unordered_map<std::string, std::shared_ptr<gl_texture>> model_textures;
+
+		// mesh manager. A map contains pairs of path to model data and a ptr
+		// to a vector of meshes related to the model. Used to get an already
+		// loaded model meshes for the *meshes. Use shared ptr due to the reason
 		// identicial to the texmap
-		static std::unordered_map<std::string, std::shared_ptr<std::vector<part>>> partmap;
+		static std::unordered_map<std::string, std::shared_ptr<std::vector<mesh>>> meshes_map;
 
-		 // material contains all texture types and texture data needed for the
-		 // model
-		std::vector<std::shared_ptr<const gl_texture>> material;
-
-		// a structure contains each part, we render part of the model
-		// independently
-		std::shared_ptr<const std::vector<part>> parts = nullptr;
+		// a structure contains each mesh, we render mesh of the model
+		// independently (local meshes)
+		std::shared_ptr<const std::vector<mesh>> model_meshes {nullptr};
 
 		// default grey color for untextured model
-		glm::vec4 vertex_color{0.5f, 0.5f, 0.5f, 0.0f};
+		glm::vec4 vertex_color {0.5f, 0.5f, 0.5f, 0.0f};
+
+		// default looking direction
+		glm::vec3 direction {0.0f, 0.0f, 0.0f};
 
 		gl_vao vao;
 
 		gl_vbo vbo;
 
+		std::string model_path;
+
 		// model matrix for transforming local vertex to world vertex, default
 		// is an identity matrix. glm::mat4 projection and view matricies are in
 		// the camera file.
-		glm::mat4 modelmatx;
-		std::list<glm::mat4> matx_list;
-		bool matx_list_modified = 0;
+		glm::mat4 modelmatx{1.0f};
+		std::array<glm::mat4, size_t(3)> modelmatx_op{glm::mat4{1.0f}, glm::mat4{1.0f}, glm::mat4{1.0f}};
+		bool modelmatx_op_modified = 0;
 
-		// fragment shader used for render the model
-		const gl_shader *fshader = nullptr;
-
-		// load the material information into this material vector
-		void loadMaterial(const std::vector<tex_info> &mat_info);
-
-		// get the scene pointer and process model data
-		void loadModelData(const std::string &model_path, bool flipUV);
-
-		// iterating through each node (part) in the scene (model) and process
+		// iterating through each node (mesh) in the scene (model) and process
 		// all the meshes data within
-		void processModelData(std::vector<part> &parts, const aiScene *scene, aiNode *n);
+		void processNodes(std::vector<mesh> &meshes, const aiScene *scene, const aiNode *n);
 
 		// load mesh data into the part vbo buffer (vbuf) and ebo buffer (ebuf)
-		void loadMeshData(std::vector<part> &parts, const aiScene *scene, const aiMesh &mesh);
+		void loadMeshesData(std::vector<mesh> &meshes, const aiScene *scene, const aiMesh &unproc_mesh);
 
-		// load into vbo buffer
+		// load vertex attrib data into vbo buffer
 		void loadVertices(const aiMesh &mesh, std::vector<float>& vbuf);
 
-		// load into ebo buffer
+		// load indices data into ebo buffer
 		void loadFaces(const aiMesh &mesh, std::vector<unsigned>& ebuf);
+
+		// load material data into a mesh m
+		void loadMaterial(aiMaterial *mat, mesh &m);
+
+		// load texture data into a mesh m, used inside loadMaterial
+		void loadTexture(const std::string &tex_path, aiTextureType tex_type);
+
+		// assign uniform in all shader stages (attached vertex shader outside 
+		// draw(), and supplied fragment shader)
+		void assignUniforms(gl_program &program, const glm::mat4 &projection, const glm::mat4 &view);
 
 		// assign the uniform mat vm_mat (view * model), and pvm_mat
 		// (projection * vm_mat) in vertex shader for transformation of vertex
 		// postion
 		void assignVertexUniformTransMat(gl_program &program, const glm::mat4 &projection, const glm::mat4 &view);
+
 		// looping through each texture in the material and assign it texture unit
 		// to a sampler in the fragment shader.
-		void assignFragmentUniformSampler(gl_program &program);
+		// void assignFragmentUniformSamplers(gl_program &program, const std::vector<std::shared_ptr<gl_texture>> &material);
+		void assignFragmentUniformSamplers(gl_program &program);
 
+		// reconstruct model matrix is the matrix list is modified
 		void constructModelMatrix();
-
-		// construct a model matrix from the variables gathered in the
-		// model_matrix namespace
-		// glm::mat4 constructModelMatrix();
-
-		// CHECK IF THE TEXTURE IS ALREADY LOADED SO IT DOESN'T HAVE TO RELOAD THE SAME TEXTURE OBJECT
-		// void loadMaterial(const aiMesh &mesh){
-		// 	aiMaterial *material = scene->mMaterials[mesh.mMaterialIndex];
-		// 	std::string mPath{"/home/hungvu/Archive/progs/opengl/model/"};
-		// 	std::vector<aiTextureType> texType = {
-		// 		/*aiTextureType_AMBIENT,*/
-		// 		aiTextureType_DIFFUSE,
-		// 		aiTextureType_SPECULAR,
-		// 		/*aiTextureType_EMISSIVE*/
-		// 	};
-		// 	for(size_t i = 0; i < texType.size(); i++){
-		// 		mbuf.push_back(material->GetTextureCount(texType[i]));
-		// 		for(size_t j = 0; j < *mbuf.back(); j++){
-		// 			gl_texture tex;
-		// 			// std::string tPath = mPath + texTypeName[i].c_str();
-		// 			// aiString texPath{tPath};
-		// 			aiString texPath;
-		// 			material->GetTexture(texType[i], j, &texPath);
-		// 			// texPath.C_Str() is diffuse0 for example, rewrite the loadMaterial function to be more concrete
-		// 			// TODO: std::string{texPath.C_Str()}).c_str(), rewrite
-		// 			tex.loadData((mPath + std::string{texPath.C_Str()}).c_str(), texType[i]);
-		// 			mat.push_back(tex);
-		// 		}
-		// 	}
-		// };
 };
 
 #endif // MODEL_H

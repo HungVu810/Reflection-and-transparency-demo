@@ -1,19 +1,25 @@
 #ifndef CAMERA_H
 #define CAMERA_H
-#include "./model.h"
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
 namespace camera{
 	// default win_width and win_height. These variables are assigned to a
 	// more specific value during the start of main()
-	unsigned win_width = 1920, win_height = 1080;
+	extern unsigned win_width;
 
-	// projection and view matrix fir the camera.
-	glm::mat4 projection{1.0f}, view{1.0f};
+	extern unsigned win_height;
+
+	// projection and view matrix for the camera.
+	extern glm::mat4 projection;
+
+	extern glm::mat4 view;
+
+	// camera y-x plane fov
+	extern float yfov;
 
 	// camera position relative to the world space origin
-	glm::vec3 position{0.0f};
+	extern glm::vec3 position;
 
 	// previous position of the mouse cursor (0,0 top left to the x,y
 	// resolution at bottom right). The previous positions are used to
@@ -22,58 +28,60 @@ namespace camera{
 	// y_xpos are double instead of float like the angle variables because the
 	// angles are restricted to float due to the glm::vec3 is a 3-float and
 	// glm function works based on the glm::vec3 var type.
-	double prev_xpos = 1920 / 2, prev_ypos = 1080 / 2;
+	extern double prev_xpos;
+
+	extern double prev_ypos;
 
 	 // -z axis
-	glm::vec3 direction{0.0f, 0.0f, -1.0f};
+	extern glm::vec3 direction;
 
 	 // y axis
-	glm::vec3 up{0.0f, 1.0f, 0.0f};
+	extern glm::vec3 up;
 
 	 // x axis
-	glm::vec3 side{1.0f, 0.0f, 0.0f};
+	extern glm::vec3 side;
 
 	// THE DEFAULT ORDER IS YAW, PITCH THEN ROLL
 	// rotate about the x-axis (up, down)
-	float pitch_angle = 0.0f;
+	extern float pitch_angle;
 
 	// rotate about the y-axis (left, right)
-	float yaw_angle = 0.0f;
+	extern float yaw_angle;
 
 	// rotate about the z-axis (counter-clockwise, clockwise). The roll angle is based on the pitch_angle
-	float roll_angle = 0.0f;
+	extern float roll_angle;
 
 	// enable rotation when leftshift is pressed
-	bool rotation_enabled = 0;
+	extern bool rotation_enabled;
 
 	// control how fast the camera will move in the vertical/ horizontal
 	// directions
-	float move_rate = 0.5f;
+	extern float move_rate;
 
 	// control the mouse sensitivity rate
-	float sensitivity = 1.0f;
+	extern float sensitivity;
 
 	// DEBUGGING CAM SECTION ========================
 
 	// enable debugging camera will enable another static pov that look at
 	// that main camera. The main camera is included with 3 axis models to
 	// visualize the up, directional and side axis.
-	bool enable_debug_cam = 0;
+	extern bool enable_debug_cam;
 
 	// update the debugging cam variables below if the handleKeystroke and the
 	// handleCursorPos are called by the callback function for the mouse,
 	// keyboard movement.
-	bool mouse_callback = 0;
+	extern bool mouse_callback;
 
 	// variables for debugging camera. The debugging vars are used to render
 	// the main camera 3-axis model.
-	glm::vec3 prev_direction{0.0f, 0.0f, -1.0f};
+	extern glm::vec3 prev_direction;
 
-	glm::vec3 prev_up{0.0f, 1.0f, 0.0f};
+	extern glm::vec3 prev_up;
 
-	glm::vec3 prev_side{1.0f, 0.0f, 0.0f};
+	extern glm::vec3 prev_side;
 
-	float prev_pitch_angle = 0.0f;
+	extern float prev_pitch_angle;
 }
 
 // view = glm::lookAt(
@@ -100,7 +108,4 @@ namespace camera{
 // // 	}
 // // 	camera::callback = false;
 // // }
-
-
-
 #endif // CAMERA_H

@@ -66,87 +66,101 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 
 build cmake_object_order_depends_target_opengl: phony || CMakeFiles/opengl.dir
 
+build CMakeFiles/opengl.dir/src/camera.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/camera.cpp || cmake_object_order_depends_target_opengl
+  DEP_FILE = CMakeFiles/opengl.dir/src/camera.cpp.o.d
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  INCLUDES = -I.././include
+  OBJECT_DIR = CMakeFiles/opengl.dir
+  OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
+
 build CMakeFiles/opengl.dir/src/gl_context.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/gl_context.cpp || cmake_object_order_depends_target_opengl
   DEP_FILE = CMakeFiles/opengl.dir/src/gl_context.cpp.o.d
-  FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
-  INCLUDES = -I../include
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  INCLUDES = -I.././include
   OBJECT_DIR = CMakeFiles/opengl.dir
   OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
 
 build CMakeFiles/opengl.dir/src/gl_object.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/gl_object.cpp || cmake_object_order_depends_target_opengl
   DEP_FILE = CMakeFiles/opengl.dir/src/gl_object.cpp.o.d
-  FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
-  INCLUDES = -I../include
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  INCLUDES = -I.././include
   OBJECT_DIR = CMakeFiles/opengl.dir
   OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
 
 build CMakeFiles/opengl.dir/src/gl_program.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/gl_program.cpp || cmake_object_order_depends_target_opengl
   DEP_FILE = CMakeFiles/opengl.dir/src/gl_program.cpp.o.d
-  FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
-  INCLUDES = -I../include
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  INCLUDES = -I.././include
   OBJECT_DIR = CMakeFiles/opengl.dir
   OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
 
 build CMakeFiles/opengl.dir/src/gl_shader.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/gl_shader.cpp || cmake_object_order_depends_target_opengl
   DEP_FILE = CMakeFiles/opengl.dir/src/gl_shader.cpp.o.d
-  FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
-  INCLUDES = -I../include
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  INCLUDES = -I.././include
   OBJECT_DIR = CMakeFiles/opengl.dir
   OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
 
 build CMakeFiles/opengl.dir/src/gl_texture.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/gl_texture.cpp || cmake_object_order_depends_target_opengl
   DEP_FILE = CMakeFiles/opengl.dir/src/gl_texture.cpp.o.d
-  FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
-  INCLUDES = -I../include
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  INCLUDES = -I.././include
   OBJECT_DIR = CMakeFiles/opengl.dir
   OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
 
 build CMakeFiles/opengl.dir/src/gl_vao.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/gl_vao.cpp || cmake_object_order_depends_target_opengl
   DEP_FILE = CMakeFiles/opengl.dir/src/gl_vao.cpp.o.d
-  FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
-  INCLUDES = -I../include
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  INCLUDES = -I.././include
   OBJECT_DIR = CMakeFiles/opengl.dir
   OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
 
 build CMakeFiles/opengl.dir/src/gl_vbo.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/gl_vbo.cpp || cmake_object_order_depends_target_opengl
   DEP_FILE = CMakeFiles/opengl.dir/src/gl_vbo.cpp.o.d
-  FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
-  INCLUDES = -I../include
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  INCLUDES = -I.././include
   OBJECT_DIR = CMakeFiles/opengl.dir
   OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
 
 build CMakeFiles/opengl.dir/src/glad.c.o: C_COMPILER__opengl_DEBUG ../src/glad.c || cmake_object_order_depends_target_opengl
   DEP_FILE = CMakeFiles/opengl.dir/src/glad.c.o.d
   FLAGS = -fdiagnostics-color=always -g
-  INCLUDES = -I../include
+  INCLUDES = -I.././include
+  OBJECT_DIR = CMakeFiles/opengl.dir
+  OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
+
+build CMakeFiles/opengl.dir/src/handleInput.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/handleInput.cpp || cmake_object_order_depends_target_opengl
+  DEP_FILE = CMakeFiles/opengl.dir/src/handleInput.cpp.o.d
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  INCLUDES = -I.././include
   OBJECT_DIR = CMakeFiles/opengl.dir
   OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
 
 build CMakeFiles/opengl.dir/src/light_model.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/light_model.cpp || cmake_object_order_depends_target_opengl
   DEP_FILE = CMakeFiles/opengl.dir/src/light_model.cpp.o.d
-  FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
-  INCLUDES = -I../include
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  INCLUDES = -I.././include
   OBJECT_DIR = CMakeFiles/opengl.dir
   OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
 
 build CMakeFiles/opengl.dir/src/main.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/main.cpp || cmake_object_order_depends_target_opengl
   DEP_FILE = CMakeFiles/opengl.dir/src/main.cpp.o.d
-  FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
-  INCLUDES = -I../include
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  INCLUDES = -I.././include
   OBJECT_DIR = CMakeFiles/opengl.dir
   OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
 
 build CMakeFiles/opengl.dir/src/model.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/model.cpp || cmake_object_order_depends_target_opengl
   DEP_FILE = CMakeFiles/opengl.dir/src/model.cpp.o.d
-  FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
-  INCLUDES = -I../include
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  INCLUDES = -I.././include
   OBJECT_DIR = CMakeFiles/opengl.dir
   OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
 
 build CMakeFiles/opengl.dir/src/runtime_except.cpp.o: CXX_COMPILER__opengl_DEBUG ../src/runtime_except.cpp || cmake_object_order_depends_target_opengl
   DEP_FILE = CMakeFiles/opengl.dir/src/runtime_except.cpp.o.d
-  FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
-  INCLUDES = -I../include
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  INCLUDES = -I.././include
   OBJECT_DIR = CMakeFiles/opengl.dir
   OBJECT_FILE_DIR = CMakeFiles/opengl.dir/src
 
@@ -158,9 +172,9 @@ build CMakeFiles/opengl.dir/src/runtime_except.cpp.o: CXX_COMPILER__opengl_DEBUG
 #############################################
 # Link the executable bin/opengl
 
-build bin/opengl: CXX_EXECUTABLE_LINKER__opengl_DEBUG CMakeFiles/opengl.dir/src/gl_context.cpp.o CMakeFiles/opengl.dir/src/gl_object.cpp.o CMakeFiles/opengl.dir/src/gl_program.cpp.o CMakeFiles/opengl.dir/src/gl_shader.cpp.o CMakeFiles/opengl.dir/src/gl_texture.cpp.o CMakeFiles/opengl.dir/src/gl_vao.cpp.o CMakeFiles/opengl.dir/src/gl_vbo.cpp.o CMakeFiles/opengl.dir/src/glad.c.o CMakeFiles/opengl.dir/src/light_model.cpp.o CMakeFiles/opengl.dir/src/main.cpp.o CMakeFiles/opengl.dir/src/model.cpp.o CMakeFiles/opengl.dir/src/runtime_except.cpp.o
-  FLAGS = -std=c++11 -fdiagnostics-color=always -fsanitize=address -g
-  LINK_LIBRARIES = -l:libglfw3.a  -lGL  -lX11  -lpthread  -lXrandr  -lXi  -ldl  -lassimp
+build bin/opengl: CXX_EXECUTABLE_LINKER__opengl_DEBUG CMakeFiles/opengl.dir/src/camera.cpp.o CMakeFiles/opengl.dir/src/gl_context.cpp.o CMakeFiles/opengl.dir/src/gl_object.cpp.o CMakeFiles/opengl.dir/src/gl_program.cpp.o CMakeFiles/opengl.dir/src/gl_shader.cpp.o CMakeFiles/opengl.dir/src/gl_texture.cpp.o CMakeFiles/opengl.dir/src/gl_vao.cpp.o CMakeFiles/opengl.dir/src/gl_vbo.cpp.o CMakeFiles/opengl.dir/src/glad.c.o CMakeFiles/opengl.dir/src/handleInput.cpp.o CMakeFiles/opengl.dir/src/light_model.cpp.o CMakeFiles/opengl.dir/src/main.cpp.o CMakeFiles/opengl.dir/src/model.cpp.o CMakeFiles/opengl.dir/src/runtime_except.cpp.o
+  FLAGS = -std=c++11 -fdiagnostics-color=always -g
+  LINK_LIBRARIES = -l:libglfw3.a  -l:librenderdoc.so  -lGL  -lX11  -lpthread  -lXrandr  -lXi  -ldl  -lassimp
   OBJECT_DIR = CMakeFiles/opengl.dir
   POST_BUILD = :
   PRE_LINK = :

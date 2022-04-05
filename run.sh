@@ -1,2 +1,2 @@
 #!/bin/sh
-cmake -B build/ -DCMAKE_BUILD_TYPE=DEBUG && cmake --build build/ && ./build/bin/opengl
+cmake -G Ninja -B build/ -DCMAKE_BUILD_TYPE=DEBUG && cmake --build build/ && ./build/bin/opengl
