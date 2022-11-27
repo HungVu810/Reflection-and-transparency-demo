@@ -40,8 +40,8 @@ void gl_program::checkLinkStatus() const{
     int link_status;
     glGetProgramiv(name, GL_LINK_STATUS, &link_status);
     if(!link_status){
-        char infolog[256];
-        glGetProgramInfoLog(name, 256, NULL, infolog);
+        char infolog[1024];
+        glGetProgramInfoLog(name, 1024, NULL, infolog);
         std::cout << "\nPROGRAM LINK STATUS LOG ======\n" << infolog << std::endl;
         std::terminate();
     }

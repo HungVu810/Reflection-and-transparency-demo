@@ -5,6 +5,7 @@
 
 namespace handleFunc{
 	extern void keystroke(GLFWwindow *window, int key, int scancode, int actions, int mods);
+	extern void mousebutton(GLFWwindow *window, int button, int actions, int mods);
 	extern void cursorPos(GLFWwindow *window, double xpos, double ypos);
 };
 

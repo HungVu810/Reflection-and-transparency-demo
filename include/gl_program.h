@@ -10,8 +10,6 @@
 #include <iostream>
 #include <sstream>
 
-#define fval_ptr(arg) const_cast<const float*>(glm::value_ptr(arg))
-
 class gl_program : public gl_object{
 
 	public:

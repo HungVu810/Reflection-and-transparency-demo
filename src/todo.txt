@@ -76,8 +76,14 @@ implemented
 	change gl_shader ctor to only accept "path", given path should have one of the extension of type .vert, .tesc, .tese, .geom, .frag or .comp
 	remove get and assignDirection() in light_model.h, those funcs are already in model.h
 	added glGetDebugMessageLog() to display debug
+	implemented imgui
 
 Notes and random learnings:
+	fragments -> fragment shader -> scissor test -> stencil test -> depth test -> color buffer
+																	blending --------|
+
+	ImGui callbacks and learn: everything are in the imgui_impl files and imgui.cpp
+
 	Multi-drawing if (same set of shaders, 1 vao, 1 vbo), different objects
 	Instanced drawing if same object multiple times
 	Otherwise normal drawing

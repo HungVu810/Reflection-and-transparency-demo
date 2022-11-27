@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\gl_context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\gl_object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\gl_program.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\gl_shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\gl_texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\gl_vao.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\gl_vbo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\handleInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\light_model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\runtime_except.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\third-party\includes\assimp" />
+    <None Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\third-party\includes\glm" />
+    <None Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\third-party\includes\glad" />
+    <None Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\third-party\includes\GLFW" />
+    <None Include="C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\third-party\includes\KHR" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{078178C8-FAA4-3747-8EAC-93D8DA7AB85E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

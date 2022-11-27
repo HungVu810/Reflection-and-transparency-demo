@@ -14,6 +14,11 @@ void main(){
 	// check frag_tex of the brickwall ?
 	vec4 color = texture(material.diffuse0, frag_tex);
 	// check for the texile color's alpha value
-	if(color.w < 0.1f) discard;
+	if(color.a < 0.1f){
+		discard;
+	}
+	/* else if(color.r == 1.0f){ */
+	/* 	color.r = 0.5f; */
+	/* } */
 	frag_color = color;
 }

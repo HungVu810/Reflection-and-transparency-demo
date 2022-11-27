@@ -12,9 +12,9 @@
 #include "../include/light_model.h"
 #include "../include/handleInput.h"
 #include "../include/camera.h"
-// #include "../../imgui/imgui.h"
-// #include "../../imgui/backends/imgui_impl_glfw.h"
-// #include "../../imgui/backends/imgui_impl_opengl3.h"
+//#include "../../imgui/imgui.h"
+//#include "../../imgui/backends/imgui_impl_glfw.h"
+//#include "../../imgui/backends/imgui_impl_opengl3.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/vec3.hpp>
@@ -31,13 +31,13 @@
 #include <array>
 #include <list>
 
- typedef  struct {
-	uint  count;
-	uint  instanceCount;
-	uint  firstIndex;
-	uint  baseVertex;
-	uint  baseInstance;
-} DrawElementsIndirectCommand;
+/* typedef  struct { */
+/* 	uint  count; */
+/* 	uint  instanceCount; */
+/* 	uint  firstIndex; */
+/* 	uint  baseVertex; */
+/* 	uint  baseInstance; */
+/* } DrawElementsIndirectCommand; */
 
 template<size_t N>
 void drawWithLights(model &m, std::array<light_model, N> &lights, gl_program &program, const gl_shader *fshader, GLenum usage = GL_STATIC_DRAW, const glm::mat4 &projection = camera::projection, const glm::mat4 &view = camera::view){
@@ -88,8 +88,8 @@ int main(){
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
 	// init context and misc.
-	gl_context contx{1920, 1080, "window"};
-	glfwSetInputMode(contx.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	gl_context contx{1600, 900, "window"};
+
 	camera::win_width = contx.width();
 	camera::win_height = contx.height();
 	int flags;
@@ -101,42 +101,43 @@ int main(){
 	}
 
 	// init imgui
-	// ImGui::CreateContext();
-	// ImGuiIO& io = ImGui::GetIO();
-	// ImGui_ImplGlfw_InitForOpenGL(contx.getWindow(), 1);
-	// ImGui_ImplOpenGL3_Init();
+	//ImGui::CreateContext();
+	//ImGuiIO& io = ImGui::GetIO();
+	//ImGui_ImplGlfw_InitForOpenGL(contx.getWindow(), 1);
+	//ImGui_ImplOpenGL3_Init();
 
 	// shaders
-	gl_shader vertex_shader {"/home/hungvu/Archive/progs/opengl/shader/generic.vert", 1};
-	gl_shader mat_fshader {"/home/hungvu/Archive/progs/opengl/shader/generic_mat.frag" ,1};
-	gl_shader nomat_fshader {"/home/hungvu/Archive/progs/opengl/shader/generic_noMat.frag", 1};
-	gl_shader grass_fshader {"/home/hungvu/Archive/progs/opengl/shader/grass.frag", 1};
+	gl_shader vertex_shader {"../shader/generic.vert", 1};
+	gl_shader mat_fshader {"../shader/generic_mat.frag" ,1};
+	gl_shader nomat_fshader {"../shader/generic_noMat.frag", 1};
+	gl_shader grass_fshader {"../shader/grass.frag", 1};
 
 	// init model objects
-	std::array<model, size_t(2)> models;
+	std::array<model, size_t(4)> models; // 2 base, 2 reflected
 	std::array<model, size_t(3)> axis;
 	std::array<light_model, size_t(3)> lights;
 
-	std::string backpack_model = "/home/hungvu/Archive/progs/opengl/model/backpack/backpack.obj";
-	std::string skull_model = "/home/hungvu/Archive/progs/opengl/model/skull/12140_Skull_v3_L2.obj";
-	std::string axis_model = "/home/hungvu/Archive/progs/opengl/model/arrow/sun-dial-arrow.obj";
-	std::string tree_model =  "/home/hungvu/Archive/progs/opengl/model/tree/Tree1/Tree1.obj";
-	std::string brickwall_model = "/home/hungvu/Archive/progs/opengl/model/brickwall/wall.obj";
-	std::string mirror_model =  "/home/hungvu/Archive/progs/opengl/model/mirror/14321_Rectangular_Mirror-white_v1_l1.obj";
-	std::string globe_model = "/home/hungvu/Archive/progs/opengl/model/sphere/globe-sphere.obj";
+	std::string backpack_model = "../model/backpack/backpack.obj";
+	std::string skull_model = "../model/skull/12140_Skull_v3_L2.obj";
+	std::string axis_model = "../model/arrow/sun-dial-arrow.obj";
+	std::string tree_model =  "../model/tree/Tree1/Tree1.obj";
+	std::string brickwall_model = "../model/brickwall/wall.obj";
+	std::string mirror_model =  "../model/mirror/14321_Rectangular_Mirror-white_v1_l1.obj";
+	std::string globe_model = "../model/sphere/globe-sphere.obj";
 
 	// models
 	// backpack
 	models[0].loadData(backpack_model, 0);
 	models[0].scale(2.0f);
-	models[0].translate(glm::vec3{10.0f, 0.0f, -8.0f});
-	models[0].assignVertexColor(glm::vec4{1.0f, 0.2f, 0.5f, 0.8f});
+	models[0].translate(glm::vec3{4.5f, 0.0f, 6.5f});
+	models[0].assignVertexColor(glm::vec4{0.0f, 0.2f, 0.5f, 0.8f});
 
 	// skull
 	models[1].loadData(skull_model, 1);
 	models[1].scale(0.25f);
-	models[1].rotate(glm::vec3{1.0f, 0.0f, 0.0f}, -std::acos(0));
-	models[1].translate(glm::vec3(-5.0f, -2.0f, -1.0f));
+	// models[1].rotate(glm::vec3{1.0f, 0.0f, 0.0f}, -std::acos(0));
+	models[1].rotate(270.0f, 0.0f, 0.0f);
+	models[1].translate(glm::vec3(-5.0f, -3.0f, 6.0f));
 	models[1].assignVertexColor(glm::vec4{0.5f, 0.3f, 0.5f, 0.0f});
 
 	// axis
@@ -145,10 +146,10 @@ int main(){
 	axis[2] = axis[1] = axis[0];
 	// x side axis
 	axis[0].scale(0.5f);
-	axis[0].rotate(glm::vec3{0.0f, 1.0f, 0.0f}, glm::radians(90.0f));
+	axis[0].rotate(0.0f, 90.0f, 0.0f);
 	// y up axis
 	axis[1].scale(0.5f);
-	axis[1].rotate(glm::vec3{1.0f, 0.0f, 0.0f}, glm::radians(-90.0f));
+	axis[1].rotate(270.0f, 0.0f, 0.0f);
 	axis[1].assignVertexColor(glm::vec4{0.0f, 1.0f, 0.0f, 0.0f});
 	// -z directional axis
 	axis[2].assignVertexColor(glm::vec4{0.0f, 0.0f, 1.0f, 0.0f});
@@ -168,16 +169,7 @@ int main(){
 	model brickwall{brickwall_model};
 	brickwall.assignVertexColor(glm::vec4{0.0f, 0.0f, 0.0f, 0.0f});
 	brickwall.scale(5.0f);
-	brickwall.translate(glm::vec3{-5.0f, 0.0f, -5.0f});
-
-	// grass (using brickwall 2d vertices)
-	gl_texture grass_tex;
-	grass_tex.bind(GL_TEXTURE20);
-	grass_tex.loadData("/home/hungvu/Archive/progs/opengl/texture/grass.png", aiTextureType_DIFFUSE);
-	model grass{brickwall_model};
-
-	// mirror 
-	model mirror{mirror_model, 1};
+	brickwall.translate(glm::vec3{-5.0f, 0.0f, 0.0f}); // do not translate on Z because we want the mirror at 0
 
 	// program
 	gl_program program;
@@ -189,49 +181,30 @@ int main(){
 	program.printDebugUniform(0);
 	program.printDebugAttachedShadersID(0);
 
-	// misc rendering modes
-	// stencil test apply on another skull mother
-	// problem
-	// model tree;
-	// colors are visible on top the of the skull where lights are not suppose to be visible (no scale of the skull model), because the normal are normalized ?
-
-	// stride = 0
-	// std::vector<DrawElementsIndirectCommand> command;
-	// gl_vao static_vao;
-	// static_vao.attribFormat(0, 3, GL_FLOAT, GL_FALSE, 32, (void*)0);
-	// static_vao.attribFormat(1, 3, GL_FLOAT, GL_FALSE, 32, (void*)12);
-	// static_vao.attribFormat(2, 2, GL_FLOAT, GL_FALSE, 32, (void*)24);
-	// gl_vbo static_vbo;
-	// static_vao.bind();
-	// static_vbo.bind();
-	// model tree;
-	// tree.loadData("/home/hungvu/Archive/progs/opengl/model/tree/Tree1/Tree1.obj", 1);
-
-
 	// rendering loop
 	double time, prevtime = 0;
 	while(!glfwWindowShouldClose(contx.getWindow())){
 		time = glfwGetTime();
 
 		// if(camera::enable_debug_cam)
-		// handle input and update data
-		glfwSetCursorPosCallback(contx.getWindow(), handleFunc::cursorPos);
+		// handle mouse, key inputs
 		glfwSetKeyCallback(contx.getWindow(), handleFunc::keystroke);
-
-		// errors callback
-		glDebugMessageCallback(MessageCallback, 0);
+		glfwSetMouseButtonCallback(contx.getWindow(), handleFunc::mousebutton);
+		//glfwSetInputMode(contx.getWindow(), GLFW_CURSOR, camera::enable_rotation ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL); // ImGui
+		glfwSetInputMode(contx.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetCursorPosCallback(contx.getWindow(), handleFunc::cursorPos);
 
 		// feed inputs to imgui and render imgui onto the screen
-		// ImGui_ImplOpenGL3_NewFrame();
-		// ImGui_ImplGlfw_NewFrame();
-		// ImGui::NewFrame();
-		// ImGui::Text("hello,asdfasdfadsf");
-		// ImGui::Render();
-		// ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		//ImGui_ImplOpenGL3_NewFrame();
+		//ImGui_ImplGlfw_NewFrame();
+		//ImGui::NewFrame();
+		//for (model &m : models)
+		//	m.exposeModelMatrixOpImGui();
 
 		// clear framebuffer from previous rendering, reset stencil/ depth test parameter to default
+		// do not enable blending by default, only transparent objects need this operation
 		glEnable(GL_STENCIL_TEST);
-		glStencilMask(0xFF); // mask all 8 bits to 1 to clear stencil buffer to 0
+		glStencilMask(0xFF); // mask all 8 bits to 1 to clear all stencil buffer fragments' bits to 0 in glStencilFunc
 		glStencilFunc(GL_ALWAYS, 0, 0xFF);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
@@ -247,62 +220,94 @@ int main(){
 		camera::projection = glm::perspective(glm::radians(camera::yfov), (const float)contx.width() / contx.height(), 0.1f, 100.0f);
 		camera::view = glm::lookAt(camera::position, camera::position + camera::direction, camera::up);
 
-		// STENCILLING STAGE ------------------------------------------------
-		// draw object of interest normally
-		for(model &m : models)
-			drawWithLights(m, lights, program, &mat_fshader);
-		//  draw the wireframe viewer
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-		brickwall.draw(program, &nomat_fshader);
+		models[0].translate(glm::vec3{ 4.5f, glm::sin(time), 6.5f });
+		//models[1].translate(glm::vec3(-5.0f, -3.0f, 6.0f));
+		models[1].translate(glm::vec3{ -5.0f, glm::sin(time + 3.0f) - 3.0f, 6.0f });
 
-		glDisable(GL_DEPTH_TEST);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glStencilFunc(GL_EQUAL, 1, 0xFF);
-		glStencilOp(GL_ZERO, GL_ZERO, GL_ZERO);
-		for(model &m : models)
-			drawWithLights(m, lights, program, &mat_fshader);
+		// STENCILLING STAGE ------------------------------------------------
+		if (camera::isMirror) // retricted to 1 way mirror
+		{
+			// draw mirror with stencil value 1 for clipping
+			brickwall.assignVertexColor(glm::vec4{0.7f, 0.7f, 0.7f, 1.0f});
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+			brickwall.draw(program, &nomat_fshader);
+
+			// draw reflection, if stencil failed then it won't proceed to depth test
+			//glDisable(GL_DEPTH_TEST);
+			models[2] = models[0]; models[2].reflectZ();
+			models[3] = models[1]; models[3].reflectZ(); models[3].nonUniformScale(glm::vec3{ 1.0f, -1.0f, 1.0f });  // something is wrong with the skull model, the reflectZ doesn't work if -Z unlike the backpack
+			glStencilFunc(GL_EQUAL, 1, 0xFF); // all of the rendered fragment with stencil value of 1 (the brickwall area) are kept, otherwise discarded
+			glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
+			drawWithLights(models[2], lights, program, &mat_fshader);
+			drawWithLights(models[3], lights, program, &mat_fshader);
+
+			// draw the reflection again, this time clear the depth so we can render the reflection properly without having to use glDisable(GL_DEPTH_TEST) which messes up the faces
+			glClear(GL_DEPTH_BUFFER_BIT);
+			glStencilFunc(GL_EQUAL, 2, 0xFF);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+			drawWithLights(models[2], lights, program, &mat_fshader);
+			drawWithLights(models[3], lights, program, &mat_fshader);
+
+			// draw the original models
+			drawWithLights(models[0], lights, program, &mat_fshader);
+			drawWithLights(models[1], lights, program, &mat_fshader);
+		}
+		else
+		{
+			// draw the original models
+			drawWithLights(models[0], lights, program, &mat_fshader);
+			drawWithLights(models[1], lights, program, &mat_fshader);
+
+			// draw the wall wireframe viewer with stencil value 1
+			brickwall.assignVertexColor(glm::vec4{0.0f, 0.0f, 0.0f, 1.0f});
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+			brickwall.draw(program, &nomat_fshader);
+
+			// draw the wireframe version the objects
+			glDisable(GL_DEPTH_TEST); // so the model can be rendered through the brickwall
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glStencilFunc(GL_EQUAL, 1, 0xFF); // all of the rendered fragment with stencil value of 1 (the brickwall area) are kept, otherwise discarded
+			glStencilOp(GL_ZERO, GL_ZERO, GL_ZERO);
+			models[0].draw(program, &nomat_fshader);
+			models[1].draw(program, &nomat_fshader);
+		}
 		// reset tests to default
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
+		glDepthFunc(GL_LESS);
 		glStencilFunc(GL_ALWAYS, 0, 0xFF);
 		glStencilFunc(GL_KEEP, GL_KEEP, GL_KEEP);
 		// STENCILLING STAGE ------------------------------------------------
 
-		// manually draw grass
-		program.attachCompiledShader(&grass_fshader);
-		program.assignUniform("material.diffuse0", glUniform1i, grass_tex.getUnit());
-		grass.draw(program, &grass_fshader);
-
-		for(model &m : axis){
-			m.draw(program, &nomat_fshader);
-		}
-
-		lights[0].translate(20.0f * glm::vec3{std::cos(time), std::sin(time), 0.0f});
-		lights[1].translate(20.0f * glm::vec3{0.0f, std::cos(time), std::sin(time)});
-		lights[2].translate(20.0f * glm::vec3{std::cos(time), 0.0f, std::sin(time)});
-		for(light_model& light : lights){
-			light.draw(program, &nomat_fshader);
-		}
-
 		program.printDebugUniform(0);
 		program.printDebugAttachedShadersID(0);
 
+		// render imgui only after the screen is cleared
+		//ImGui::Render();
+		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		glfwSwapBuffers(contx.getWindow());
 		glfwPollEvents();
+
+		// errors callback
+		glDebugMessageCallback(MessageCallback, 0);
 
 		// display frame/s in the window's title
 		// round to the third decimal place
 		std::cout.precision(3);
 		std::ostringstream sstr;
-		sstr << "Window Title. " << 1 / (time - prevtime) << " fps";
+		sstr << "OpenGL Final Project. " << 1 / (time - prevtime) << " fps";
 		contx.assignWindowTitle(sstr.str());
 		prevtime = time;
 	}
 	// Shutdown imgui
-    // ImGui_ImplOpenGL3_Shutdown();
-    // ImGui_ImplGlfw_Shutdown();
-    // ImGui::DestroyContext();
+    //ImGui_ImplOpenGL3_Shutdown();
+    //ImGui_ImplGlfw_Shutdown();
+    //ImGui::DestroyContext();
 
 	return 0;
 }

@@ -1,16 +1,20 @@
 #include "../include/model.h"
 #include "../include/runtime_except.h"
 #include "../include/camera.h"
+//#include "../../imgui/imgui.h"
+#include <assimp/Importer.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <cassert>
 #include <iostream>
 
+// initialize extern var
+//ImGuiMarkerCallback GImGuiMarkerCallback = nullptr;
+
 // init statics ==================================================================
 GLenum model::current_tex_unit = GL_TEXTURE0;
 std::unordered_map<std::string, std::shared_ptr<gl_texture>> model::textures_map;
 std::unordered_map<std::string, std::shared_ptr<std::vector<model::mesh>>> model::meshes_map;
-
 // public ==================================================================
 
 // normal ctor with path to the model. flipUV to flip the uv mapping of texture
@@ -32,10 +36,20 @@ model::model(const model &m){
 // copy assigment op
 model& model::operator=(const model &m){
 	// don't copy model_mat, the object will be at its defauly state
-	model_meshes = m.model_meshes;
-	vertex_color = m.vertex_color;
 	direction = m.direction;
-	modelmatx = glm::mat4{1.0f};
+	modelmatx = m.modelmatx;
+	modelmatx_op = m.modelmatx_op;
+	modelmatx_op_modified = m.modelmatx_op_modified;
+	model_meshes = m.model_meshes;
+	model_name = m.model_name;
+	model_path = m.model_path;
+	model_textures = m.model_textures;
+	rotate_angle = m.rotate_angle;
+	scale_factor = m.scale_factor;
+	translate_vec = m.translate_vec;
+	vao = m.vao;
+	vbo = m.vbo;
+	vertex_color = m.vertex_color;
 	return *this;
 };
 // TODO: ------------------------- maintain these functions
@@ -92,12 +106,27 @@ void model::draw(gl_program &program, const gl_shader *fshader, const glm::mat4 
 	//glMultiDrawElements(GL_TRIANGLES, meshes_ebuf_count.data(), GL_UNSIGNED_INT, (void *const *)(0), model_meshes->size());
 };
 
-
 // the first operation applied to the identity model matrix. Uniformly scale
 // the model. Default is 1.0f (no scaling of the model) if no argument is
 // given.
 void model::scale(float factor){
-	modelmatx_op[0] = glm::scale(glm::mat4{1.0f}, glm::vec3{factor});
+	scale_factor = factor;
+	modelmatx_op[0] = glm::scale(glm::mat4{1.0f}, glm::vec3{scale_factor});
+	modelmatx_op_modified = 1;
+};
+
+void model::nonUniformScale(glm::vec3 factor)
+{
+	modelmatx_op[0] = glm::scale(glm::mat4{ 1.0f }, glm::vec3{ factor[0] * scale_factor, factor[1] * scale_factor, factor[2] * scale_factor });
+	modelmatx_op_modified = 1;
+};
+
+void model::reflectZ() // reflect over Z by multiply -1 to the Z component for both the rotation and translation in the SRT transformation
+{
+	translate_vec[2] *= -1.0f; // Z
+	modelmatx_op[0] = glm::scale(glm::mat4{ 1.0f }, glm::vec3{ scale_factor, scale_factor, -scale_factor });
+	// need to also modify the translation because it came after the scaling (SRT)
+	modelmatx_op[2] = glm::translate(glm::mat4{1.0f}, translate_vec);
 	modelmatx_op_modified = 1;
 };
 
@@ -105,16 +134,35 @@ void model::scale(float factor){
 // model 'radian' angle around the given vector. Default is axis =
 // glm::vec3{1.0f, 0.0f, 0.0f}, radian = 0 (no rotation of the model)
 // if no arguments are given.
-void model::rotate(const glm::vec3 &axis, float radian){
-	modelmatx_op[1] = glm::rotate(glm::mat4{1.0f}, radian, axis);
+// void model::rotate(const glm::vec3 &axis, float radian){
+// 	// static float prev_radian {0.0f};
+// 	// if(radian - prev_radian != 0.0f){
+// 	// 	modelmatx_op[1] = glm::rotate(modelmatx_op[1], radian - prev_radian, axis);
+// 	// 	prev_radian = radian;
+// 	// 	modelmatx_op_modified = 1;
+// 	// }
+// 	modelmatx_op[1] = glm::rotate(glm::mat4{1.0f}, rotate_radian, rotate_vec);
+// 	modelmatx_op_modified = 1;
+// };
+void model::rotate(float angle_x, float angle_y, float angle_z){
+	rotate_angle[0] = angle_x;
+	rotate_angle[1] = angle_y;
+	rotate_angle[2] = angle_z;
+	// rotate identity matrix to x, y then z axis, can't use normal rotate because it will 
+	// reset modelmatx_op every time since it is using identity matrix as the basis of 
+	// rotation
+	modelmatx_op[1] = glm::rotate(glm::mat4{1.0f}, glm::radians(rotate_angle[0]), glm::vec3{1.0f, 0.0f, 0.0f});
+	modelmatx_op[1] = glm::rotate(modelmatx_op[1], glm::radians(rotate_angle[1]), glm::vec3{0.0f, 1.0f, 0.0f});
+	modelmatx_op[1] = glm::rotate(modelmatx_op[1], glm::radians(rotate_angle[2]), glm::vec3{0.0f, 0.0f, 1.0f});
 	modelmatx_op_modified = 1;
-};
+}
 
 // the third operation applied to the identity model matrix. Translate
 // the model to the given vector position. Default is glm::vec3{0.0f,
 // 0.0f, 0.0f} (no translating of the model) if no argument is given.
-void model::translate(const glm::vec3 &v){
-	modelmatx_op[2] = glm::translate(glm::mat4{1.0f}, v);
+void model::translate(const glm::vec3 &vec){
+	translate_vec = vec;
+	modelmatx_op[2] = glm::translate(glm::mat4{1.0f}, translate_vec);
 	modelmatx_op_modified = 1;
 };
 
@@ -144,7 +192,6 @@ glm::vec3 model::getPosition(){
 	return modelmatx[3];
 };
 
-
 float model::getViewDepth(const glm::mat4 &view){
 	constructModelMatrix();
 	// multiply with the view matrix to get a glm:;vec4, then return the depth
@@ -152,12 +199,51 @@ float model::getViewDepth(const glm::mat4 &view){
 	return (view * modelmatx[3])[2];
 };
 
+//void model::exposeModelMatrixOpImGui(){
+//	// static std::string scale_lable = model_name + " scale";
+//	// static std::string rotate_x_lable = model_name + " rotate x";
+//	// static std::string rotate_y_lable = model_name + " rotate y";
+//	// static std::string rotate_z_lable = model_name + " rotate z";
+//	// static std::string translate_lable = model_name + " translate";
+//	// static float scale_factor {1.0f};
+//	// static float rotate_x {}, rotate_y {0.0f}, rotate_z {0.0f};
+//
+//	// section name, not sure how the macro works since the callback function never reached
+//	IMGUI_MARKER(model_name.c_str());
+//	if(ImGui::CollapsingHeader(model_name.c_str())){
+//		ImGui::SliderFloat(tocstr(model_name + "scale"), &scale_factor, 0.05f, 5.0f);
+//		ImGui::SliderFloat(tocstr(model_name + "rotate x"), &rotate_angle[0], 0.0f, 360.0f);
+//		ImGui::SliderFloat(tocstr(model_name + "rotate y"), &rotate_angle[1], 0.0f, 360.0f);
+//		ImGui::SliderFloat(tocstr(model_name + "rotate z"), &rotate_angle[2], 0.0f, 360.0f);
+//		ImGui::SliderFloat3(tocstr(model_name + "translate"), glm::value_ptr(translate_vec), -20.0f, 20.0f);
+//
+//		// only call transformation if the current and previous value differ
+//		scale(scale_factor);
+//		rotate(rotate_angle[0], rotate_angle[1], rotate_angle[2]);
+//		translate(translate_vec);
+//	}
+//	// directly modify the last column vector the translation matrix, no need to 
+//	// call translate()
+//	// ImGui::SliderFloat3(tocstr(model_name + "translate "), glm::value_ptr(modelmatx_op[2][3]), -20.0f, 20.0f);
+//	// ImGui::RadioButton(rotate_x_lable.c_str(), &rotate_axis, 1); ImGui::SameLine();
+//	// ImGui::RadioButton(rotate_y_lable.c_str(), &rotate_axis, 2); ImGui::SameLine();
+//	// ImGui::RadioButton(rotate_z_lable.c_str(), &rotate_axis, 3);
+//	// switch(rotate_axis){
+//	// 	case 1: rotate(glm::vec3{1.0f, 0.0f, 0.0f}, glm::radians(rotate_angle)); break;
+//	// 	case 2: rotate(glm::vec3{0.0f, 1.0f, 0.0f}, glm::radians(rotate_angle)); break;
+//	// 	case 3: rotate(glm::vec3{0.0f, 0.0f, -1.0f}, glm::radians(rotate_angle)); break;
+//	// 	default: {}
+//	// }
+//}
 
 // PRIVATE ==================================================================
 
 // get the scene pointer and process model data
 void model::loadData(const std::string &path, bool flipUV){
 	model_path = path;
+	model_name = path;
+	model_name.erase(model_name.rfind('/'));
+	model_name = model_name.substr(model_name.rfind('/') + 1);
 	// look up the meshes map to check for preloaded model's meshes
 	auto meshes_iter = model::meshes_map.find(path);
 	std::shared_ptr<std::vector<mesh>> mptr;
@@ -258,8 +344,9 @@ void model::loadMaterial(aiMaterial *mat, mesh &m){
 					// process tex_fname in case of Window-formated path
 					// (ie: D:\\home) convention
 					std::string proc_texFname = tex_fname.C_Str();
-					size_t cindex = proc_texFname.rfind('\\');
-					proc_texFname = proc_texFname.substr(cindex + 1, proc_texFname.size() - cindex);
+					// size_t cindex = proc_texFname.rfind('\\');
+					// proc_texFname = proc_texFname.substr(cindex + 1, proc_texFname.size() - cindex);
+					proc_texFname = proc_texFname.substr(proc_texFname.rfind('\\') + 1);
 					// create a full path to the texture by appending the path
 					// to parent directory to the texture file name
 					std::string tex_fullpath {tex_path};

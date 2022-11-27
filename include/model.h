@@ -7,16 +7,23 @@
 #include "./gl_shader.h"
 #include "./gl_program.h"
 #include "./camera.h"
-#include "./runtime_except.h"
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
-#include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <memory>
 #include <array>
 #include <unordered_map>
+
+typedef void (*ImGuiMarkerCallback)(const char* file, int line, const char* section, void* user_data);
+// global cross-unit variable, initizalied in model.cpp
+extern ImGuiMarkerCallback GImGuiMarkerCallback;
+
+// global macros
+#define IMGUI_MARKER(section)  do { if (GImGuiMarkerCallback != nullptr) GImGuiMarkerCallback(__FILE__, __LINE__, section, nullptr); } while (0)
+#define fval_ptr(arg) const_cast<const float*>(glm::value_ptr(arg))
+#define tocstr(arg) std::string(arg).c_str()
 
 class model{
 	public:
@@ -52,18 +59,23 @@ class model{
 		// the first operation applied to the identity model matrix.
 		// Uniformly scale the model. Default is 1.0f (no scaling of the
 		// model) if no argument is given.
-		void scale(float factor = 1.0f);
+		void scale(float factor);
+
+		void nonUniformScale(glm::vec3 factor);
+
+		void reflectZ(); // reflect over Z axis
 
 		// the second operation applied to the identity model matrix. Rotate the
 		// model 'radian' angle around the given vector. Default is axis =
 		// glm::vec3{1.0f, 0.0f, 0.0f}, radian = 0 (no rotation of the model)
 		// if no arguments are given.
-		void rotate(const glm::vec3 &axis = glm::vec3{1.0f, 0.0f, 0.0f}, float radian = 0.0f);
+		// void rotate(const glm::vec3 &axis, float radian);
+		void rotate(float angle_x, float angle_y, float angle_z);
 
 		// the third operation applied to the identity model matrix. Translate
 		// the model to the given vector position. Default is glm::vec3{0.0f,
 		// 0.0f, 0.0f} (no translating of the model) if no argument is given.
-		void translate(const glm::vec3 &v = glm::vec3{0.0f, 0.0f, 0.0f});
+		void translate(const glm::vec3 &vec);
 
 		// change the current vertex color
 		void assignVertexColor(const glm::vec4 &vcolor);
@@ -79,6 +91,12 @@ class model{
 
 		// return the depth value of the model in the view space
 		float getViewDepth(const glm::mat4 &view = camera::view);
+
+		// *ImGui function exposes the private member variables to ImGuifor 
+		// modification. Only using these functions in the rendering loop and 
+		// after glClear
+		void exposeModelMatrixOpImGui();
+
 
 	private:
 
@@ -129,11 +147,17 @@ class model{
 
 		std::string model_path;
 
+		// the model's assigned parent directory name in the model path
+		// ie: ".../backpack/backpack.obj" -> model_name = backpack
+		std::string model_name;
+
 		// model matrix for transforming local vertex to world vertex, default
 		// is an identity matrix. glm::mat4 projection and view matricies are in
 		// the camera file.
 		glm::mat4 modelmatx{1.0f};
 		std::array<glm::mat4, size_t(3)> modelmatx_op{glm::mat4{1.0f}, glm::mat4{1.0f}, glm::mat4{1.0f}};
+		float scale_factor;
+		glm::vec3 rotate_angle, translate_vec;
 		bool modelmatx_op_modified = 0;
 
 		// iterating through each node (mesh) in the scene (model) and process

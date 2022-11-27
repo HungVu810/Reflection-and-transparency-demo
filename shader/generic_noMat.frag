@@ -6,7 +6,7 @@ in vec2 frag_tex;
 out vec4 frag_color;
 
 uniform vec4 vertex_color;
-uniform vec3 time;
+uniform float time;
 
 void main(){
 	frag_color = vertex_color;

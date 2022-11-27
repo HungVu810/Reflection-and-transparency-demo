@@ -51,8 +51,11 @@ namespace camera{
 	// rotate about the z-axis (counter-clockwise, clockwise). The roll angle is based on the pitch_angle
 	extern float roll_angle;
 
-	// enable rotation when leftshift is pressed
-	extern bool rotation_enabled;
+	// enable roll when leftshift is pressed
+	extern bool enable_roll;
+
+	// enable rotation when left mouse is pressed (yaw, pitch and roll)
+	extern bool enable_rotation;
 
 	// control how fast the camera will move in the vertical/ horizontal
 	// directions
@@ -82,6 +85,9 @@ namespace camera{
 	extern glm::vec3 prev_side;
 
 	extern float prev_pitch_angle;
+
+	// TOGGLING MIRROR/X-RAY FOR THE WALL
+	extern bool isMirror;
 }
 
 // view = glm::lookAt(
