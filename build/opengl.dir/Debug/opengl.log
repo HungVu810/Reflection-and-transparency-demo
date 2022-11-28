@@ -3,6 +3,6 @@ cl : command line  warning D9002: ignoring unknown option '-fdiagnostics-color=a
   main.cpp
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(414,1): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(407,1): message : while compiling class template member function 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(double)'
-C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\main.cpp(347,53): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(double)' being compiled
+C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\main.cpp(305,61): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(double)' being compiled
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(671,75): message : see reference to class template instantiation 'std::basic_ostream<char,std::char_traits<char>>' being compiled
   opengl.vcxproj -> C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\build\bin\Debug\opengl.exe

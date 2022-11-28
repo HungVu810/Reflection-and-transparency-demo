@@ -250,6 +250,8 @@ int main(){
 			drawWithLights(models[3], lights, program, &mat_fshader);
 
 			// draw the original models
+			glStencilFunc(GL_ALWAYS, 0, 0xFF);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 			drawWithLights(models[0], lights, program, &mat_fshader);
 			drawWithLights(models[1], lights, program, &mat_fshader);
 		}
