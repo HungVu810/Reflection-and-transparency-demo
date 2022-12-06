@@ -110,7 +110,6 @@ int main(){
 	gl_shader vertex_shader {"../shader/generic.vert", 1};
 	gl_shader mat_fshader {"../shader/generic_mat.frag" ,1};
 	gl_shader nomat_fshader {"../shader/generic_noMat.frag", 1};
-	gl_shader grass_fshader {"../shader/grass.frag", 1};
 
 	// init model objects
 	std::array<model, size_t(4)> models; // 2 base, 2 reflected
@@ -119,11 +118,7 @@ int main(){
 
 	std::string backpack_model = "../model/backpack/backpack.obj";
 	std::string skull_model = "../model/skull/12140_Skull_v3_L2.obj";
-	std::string axis_model = "../model/arrow/sun-dial-arrow.obj";
-	std::string tree_model =  "../model/tree/Tree1/Tree1.obj";
 	std::string brickwall_model = "../model/brickwall/wall.obj";
-	std::string mirror_model =  "../model/mirror/14321_Rectangular_Mirror-white_v1_l1.obj";
-	std::string globe_model = "../model/sphere/globe-sphere.obj";
 
 	// models
 	// backpack
@@ -139,31 +134,6 @@ int main(){
 	models[1].rotate(270.0f, 0.0f, 0.0f);
 	models[1].translate(glm::vec3(-5.0f, -3.0f, 6.0f));
 	models[1].assignVertexColor(glm::vec4{0.5f, 0.3f, 0.5f, 0.0f});
-
-	// axis
-	axis[0].loadData(axis_model);
-	axis[0].assignVertexColor(glm::vec4{1.0f, 0.0f, 0.0f, 0.0f});
-	axis[2] = axis[1] = axis[0];
-	// x side axis
-	axis[0].scale(0.5f);
-	axis[0].rotate(0.0f, 90.0f, 0.0f);
-	// y up axis
-	axis[1].scale(0.5f);
-	axis[1].rotate(270.0f, 0.0f, 0.0f);
-	axis[1].assignVertexColor(glm::vec4{0.0f, 1.0f, 0.0f, 0.0f});
-	// -z directional axis
-	axis[2].assignVertexColor(glm::vec4{0.0f, 0.0f, 1.0f, 0.0f});
-	axis[2].scale(-0.5f); // point in -z axis due to OpenGL right hand rule
-
-	// lights
-	lights[0].loadData(globe_model);
-	lights[0].assignVertexColor(glm::vec4{1.0f, 0.0f, 0.0f, 0.0f});
-	lights[0].assignInnerConeAngle(10.0f);
-	lights[0].assignOuterConeAngle(20.0f);
-	lights[0].assignDirection(glm::vec3{0.0f, 0.0f, 0.0f});
-	lights[2] = lights[1] = lights[0];
-	lights[1].assignVertexColor(glm::vec4{0.0f, 1.0f, 0.0f, 0.0f});
-	lights[2].assignVertexColor(glm::vec4{0.0f, 0.0f, 1.0f, 0.0f});
 
 	// brickwall 
 	model brickwall{brickwall_model};
@@ -255,7 +225,7 @@ int main(){
 			drawWithLights(models[0], lights, program, &mat_fshader);
 			drawWithLights(models[1], lights, program, &mat_fshader);
 		}
-		else
+		else // X-Ray
 		{
 			// draw the original models
 			drawWithLights(models[0], lights, program, &mat_fshader);
@@ -275,6 +245,7 @@ int main(){
 			models[0].draw(program, &nomat_fshader);
 			models[1].draw(program, &nomat_fshader);
 		}
+
 		// reset tests to default
 		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

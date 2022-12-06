@@ -30,9 +30,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/archive)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-# set(OPENGL_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-# set(OPENGL_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
-
 # to get rid of [abi::cx11]
 # add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
 
@@ -41,8 +38,15 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # https://stackoverflow.com/questions/70250551/failure-to-compile-imgui-glfw-opengl-on-linux-with-gcc-11-2
 # https://stackoverflow.com/questions/13703647/how-to-properly-add-include-directories-with-cmake
 
-set(INCLUDES_DIRECTORY "C:/Users/hungd/Documents/Library/Projects/OpenGL/opengl/third-party/includes")
-set(LIBS_DIRECTORY "C:/Users/hungd/Documents/Library/Projects/OpenGL/opengl/third-party/libs")
+set(INCLUDES_DIRECTORY ${CMAKE_SOURCE_DIR}/third-party/includes)
+set(LIBS_DIRECTORY ${CMAKE_SOURCE_DIR}/third-party/libs)
+set(BINS_DIRECTORY ${CMAKE_SOURCE_DIR}/third-party/bins)
+
+# copy assimp dll to built binary folder, our binary needs it at runtime to resolve assimp's funcs reference
+# https://stackoverflow.com/questions/10671916/how-to-copy-dll-files-into-the-same-folder-as-the-executable-using-cmake
+# find_library(ASSIMP_DLL NAMES assimp-vc143-mt PATHS ${BINS_DIRECTORY})
+file(COPY ${BINS_DIRECTORY}/assimp-vc143-mt.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
+file(COPY ${BINS_DIRECTORY}/assimp-vc143-mt.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)
 
 file(GLOB SOURCE_FILES
 	src/*.cpp
@@ -72,6 +76,10 @@ set(DEPENDANT_LIBS
 
 # generate executable target
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADERS})
+
+# set startup project as opengl instead of the default ALL_BUILD
+# https://stackoverflow.com/questions/7304625/how-do-i-change-the-startup-project-of-a-visual-studio-solution-via-cmake
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT opengl)
 
 # target_... to add important libs/dir/files/flags to the target EXECUTABLE
 # -I TO ADD <DIR> INTO HEADER SEARCH LIST OF ${PROJECT_NAME} target, used to 

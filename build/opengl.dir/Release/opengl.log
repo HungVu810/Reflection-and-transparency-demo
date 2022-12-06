@@ -1,8 +1,42 @@
-﻿cl : command line  warning D9002: ignoring unknown option '-std=c++11'
+﻿  Building Custom Rule C:/Users/hungd/Documents/Library/Projects/OpenGL/opengl/CMakeLists.txt
+cl : command line  warning D9002: ignoring unknown option '-std=c++11'
 cl : command line  warning D9002: ignoring unknown option '-fdiagnostics-color=always'
+  camera.cpp
+  gl_context.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(774,1): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\gl_context.cpp(17,46): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &std::operator <<<std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,const char *)' being compiled
+  gl_object.cpp
+  gl_program.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(305,1): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(298,1): message : while compiling class template member function 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(unsigned int)'
+C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\gl_program.cpp(71,28): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(unsigned int)' being compiled
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(671,75): message : see reference to class template instantiation 'std::basic_ostream<char,std::char_traits<char>>' being compiled
+  gl_shader.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(774,1): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\gl_shader.cpp(45,30): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &std::operator <<<std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,const char *)' being compiled
+  gl_texture.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(774,1): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\gl_texture.cpp(40,29): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &std::operator <<<std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,const char *)' being compiled
+  gl_vao.cpp
+C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\gl_vao.cpp(23,8): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+  gl_vbo.cpp
+  handleInput.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(287,1): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(272,1): message : while compiling class template member function 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(int)'
+C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\handleInput.cpp(25,55): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(int)' being compiled
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(671,75): message : see reference to class template instantiation 'std::basic_ostream<char,std::char_traits<char>>' being compiled
+  light_model.cpp
   main.cpp
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(414,1): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(407,1): message : while compiling class template member function 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(double)'
-C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\main.cpp(344,53): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(double)' being compiled
+C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\main.cpp(276,61): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(double)' being compiled
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\ostream(671,75): message : see reference to class template instantiation 'std::basic_ostream<char,std::char_traits<char>>' being compiled
+  model.cpp
+C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\model.cpp(376,7): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+  runtime_except.cpp
+C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\src\runtime_except.cpp(6,8): warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+  Generating Code...
+cl : command line  warning D9002: ignoring unknown option '-std=c++11'
+cl : command line  warning D9002: ignoring unknown option '-fdiagnostics-color=always'
+  glad.c
   opengl.vcxproj -> C:\Users\hungd\Documents\Library\Projects\OpenGL\opengl\build\bin\Release\opengl.exe
