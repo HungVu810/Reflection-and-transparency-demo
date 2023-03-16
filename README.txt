@@ -1,7 +1,3 @@
-Name: Hung Dung Vu
-NetID: hungdv
-Student ID: 62285352
-
 Controls:
 - WASD to move around
 - Q to close the window
